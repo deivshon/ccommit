@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-import getch
+import curses
 
 from typing import Dict, Optional
 
@@ -40,16 +40,52 @@ def failure(msg: str, exit_code: int = 1):
     sys.exit(exit_code)
 
 
-def input_detect_esc(prompt: Optional[str] = None) -> str | None:
+def input_detect_esc(prompt: Optional[str] = None) -> Optional[str]:
+    KEY_ENTER = 10
+    KEY_CTRLW = 23
+    ESC_KEY = 27
+    KEY_BACKSPACE = 127
+
+    default_escdelay = curses.get_escdelay()
+    stdscr = curses.initscr()
+
+    curses.noecho()
+    curses.set_escdelay(1)
+    stdscr.keypad(True)
+
     if prompt is not None:
-        print(prompt)
+        stdscr.addstr(prompt + "\n")
 
     buf = ""
     while True:
-        key_stroke = getch.getche()
-        if ord(key_stroke) == 27:
-            return None
-        elif ord(key_stroke) == 10:
-            return buf
+        key = stdscr.getch()
+
+        if key == ESC_KEY:
+            buf = None
+            break
+        elif key == KEY_ENTER:
+            break
+        elif key == curses.KEY_BACKSPACE or key == KEY_BACKSPACE:
+            if len(buf) > 0:
+                buf = buf[:-1]
+                stdscr.addstr("\b \b")
+        elif key == KEY_CTRLW:
+            if len(buf) == 0:
+                continue
+            elif buf[-1] == " ":
+                while len(buf) > 0 and buf[-1] == " ":
+                    buf = buf[:-1]
+                    stdscr.addstr("\b \b")
+
+            while len(buf) > 0 and buf[-1] != " ":
+                buf = buf[:-1]
+                stdscr.addstr("\b \b")
         else:
-            buf += key_stroke
+            buf += chr(key)
+            stdscr.addstr(chr(key))
+
+    stdscr.clear()
+    curses.set_escdelay(default_escdelay)
+    curses.endwin()
+
+    return buf
