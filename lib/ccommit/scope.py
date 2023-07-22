@@ -52,7 +52,8 @@ class ScopeSelector(BaseSelector):
         if not add:
             prompt += " (only use once)"
 
-        newScope = input_detect_esc(prompt)
+        newScope = input_detect_esc(
+            prompt=prompt, refuse_empty=True)
 
         if newScope == None:
             return None
