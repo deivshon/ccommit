@@ -1,14 +1,431 @@
 {
-    "type": [
-        {
-            "name": "feat",
-            "long": "Feature",
-            "description": "A new feature"
-        },
-        {
-            "name": "fix",
-            "long": "Bug Fixes",
-            "description": "A bug fix"
-        }
-    ]
+  "type": [
+    {
+      "name": "feat",
+      "long": "Feature",
+      "description": "A new feature"
+    },
+    {
+      "name": "fix",
+      "long": "Bug Fixes",
+      "description": "A bug fix"
+    },
+    {
+        "name": "docs",
+        "long": "Documentation",
+        "description": "Documentation only changes"
+    },
+    {
+        "name": "style",
+        "long": "Styles",
+        "description": "Changes that do not affect the meaning of the code"
+    },
+    {
+        "name": "refactor",
+        "long": "Code Refactoring",
+        "description": "A code change that neither fixes a bug nor adds a feature"
+    },
+    {
+        "name": "perf",
+        "long": "Performance Improvements",
+        "description": "A code change that improves performance"
+    },
+    {
+        "name": "test",
+        "long": "Tests",
+        "description": "Adding missing tests or correcting existing tests"
+    },
+    {
+        "name": "build",
+        "long": "Builds",
+        "description": "Changes that affect the build system or external dependencies"
+    },
+    {
+        "name": "ci",
+        "long": "Continuous Integration",
+        "description": "Changes to our CI configuration files and scripts"
+    },
+    {
+        "name": "chore",
+        "long": "Chores",
+        "description": "Other chantges that don't modify src or test files"
+    },
+    {
+        "name": "revert",
+        "long": "Reverts",
+        "description": "Reverts a previous commit"
+    }
+  ],
+  "gitmoji": [
+    {
+      "name": ":art:",
+      "long": "🎨",
+      "description": "Improve structure / format of the code"
+    },
+    {
+      "name": ":zap:",
+      "long": "⚡️",
+      "description": "Improve performance"
+    },
+    {
+      "name": ":fire:",
+      "long": "🔥",
+      "description": "Remove code or files"
+    },
+    {
+      "name": ":bug:",
+      "long": "🐛",
+      "description": "Fix a bug"
+    },
+    {
+      "name": ":ambulance:",
+      "long": "🚑️",
+      "description": "Critical hotfix"
+    },
+    {
+      "name": ":sparkles:",
+      "long": "✨",
+      "description": "Introduce new features"
+    },
+    {
+      "name": ":memo:",
+      "long": "📝",
+      "description": "Add or update documentation"
+    },
+    {
+      "name": ":rocket:",
+      "long": "🚀",
+      "description": "Deploy stuff"
+    },
+    {
+      "name": ":lipstick:",
+      "long": "💄",
+      "description": "Add or update the UI and style files"
+    },
+    {
+      "name": ":tada:",
+      "long": "🎉",
+      "description": "Begin a project"
+    },
+    {
+      "name": ":white_check_mark:",
+      "long": "✅",
+      "description": "Add, update, or pass tests"
+    },
+    {
+      "name": ":lock:",
+      "long": "🔒️",
+      "description": "Fix security issues"
+    },
+    {
+      "name": ":closed_lock_with_key:",
+      "long": "🔐",
+      "description": "Add or update secrets"
+    },
+    {
+      "name": ":bookmark:",
+      "long": "🔖",
+      "description": "Release / Version tags"
+    },
+    {
+      "name": ":rotating_light:",
+      "long": "🚨",
+      "description": "Fix compiler / linter warnings"
+    },
+    {
+      "name": ":construction:",
+      "long": "🚧",
+      "description": "Work in progress"
+    },
+    {
+      "name": ":green_heart:",
+      "long": "💚",
+      "description": "Fix CI Build"
+    },
+    {
+      "name": ":arrow_down:",
+      "long": "⬇️",
+      "description": "Downgrade dependencies"
+    },
+    {
+      "name": ":arrow_up:",
+      "long": "⬆️",
+      "description": "Upgrade dependencies"
+    },
+    {
+      "name": ":pushpin:",
+      "long": "📌",
+      "description": "Pin dependencies to specific versions"
+    },
+    {
+      "name": ":construction_worker:",
+      "long": "👷",
+      "description": "Add or update CI build system"
+    },
+    {
+      "name": ":chart_with_upwards_trend:",
+      "long": "📈",
+      "description": "Add or update analytics or track code"
+    },
+    {
+      "name": ":recycle:",
+      "long": "♻️",
+      "description": "Refactor code"
+    },
+    {
+      "name": ":heavy_plus_sign:",
+      "long": "➕",
+      "description": "Add a dependency"
+    },
+    {
+      "name": ":heavy_minus_sign:",
+      "long": "➖",
+      "description": "Remove a dependency"
+    },
+    {
+      "name": ":wrench:",
+      "long": "🔧",
+      "description": "Add or update configuration files"
+    },
+    {
+      "name": ":hammer:",
+      "long": "🔨",
+      "description": "Add or update development scripts"
+    },
+    {
+      "name": ":globe_with_meridians:",
+      "long": "🌐",
+      "description": "Internationalization and localization"
+    },
+    {
+      "name": ":pencil2:",
+      "long": "✏️",
+      "description": "Fix typos"
+    },
+    {
+      "name": ":poop:",
+      "long": "💩",
+      "description": "Write bad code that needs to be improved"
+    },
+    {
+      "name": ":rewind:",
+      "long": "⏪️",
+      "description": "Revert changes"
+    },
+    {
+      "name": ":twisted_rightwards_arrows:",
+      "long": "🔀",
+      "description": "Merge branches"
+    },
+    {
+      "name": ":package:",
+      "long": "📦️",
+      "description": "Add or update compiled files or packages"
+    },
+    {
+      "name": ":alien:",
+      "long": "👽️",
+      "description": "Update code due to external API changes"
+    },
+    {
+      "name": ":truck:",
+      "long": "🚚",
+      "description": "Move or rename resources (e.g.: files, paths, routes)"
+    },
+    {
+      "name": ":page_facing_up:",
+      "long": "📄",
+      "description": "Add or update license"
+    },
+    {
+      "name": ":boom:",
+      "long": "💥",
+      "description": "Introduce breaking changes"
+    },
+    {
+      "name": ":bento:",
+      "long": "🍱",
+      "description": "Add or update assets"
+    },
+    {
+      "name": ":wheelchair:",
+      "long": "♿️",
+      "description": "Improve accessibility"
+    },
+    {
+      "name": ":bulb:",
+      "long": "💡",
+      "description": "Add or update comments in source code"
+    },
+    {
+      "name": ":beers:",
+      "long": "🍻",
+      "description": "Write code drunkenly"
+    },
+    {
+      "name": ":speech_balloon:",
+      "long": "💬",
+      "description": "Add or update text and literals"
+    },
+    {
+      "name": ":card_file_box:",
+      "long": "🗃️",
+      "description": "Perform database related changes"
+    },
+    {
+      "name": ":loud_sound:",
+      "long": "🔊",
+      "description": "Add or update logs"
+    },
+    {
+      "name": ":mute:",
+      "long": "🔇",
+      "description": "Remove logs"
+    },
+    {
+      "name": ":busts_in_silhouette:",
+      "long": "👥",
+      "description": "Add or update contributor(s)"
+    },
+    {
+      "name": ":children_crossing:",
+      "long": "🚸",
+      "description": "Improve user experience / usability"
+    },
+    {
+      "name": ":building_construction:",
+      "long": "🏗️",
+      "description": "Make architectural changes"
+    },
+    {
+      "name": ":iphone:",
+      "long": "📱",
+      "description": "Work on responsive design"
+    },
+    {
+      "name": ":clown_face:",
+      "long": "🤡",
+      "description": "Mock things"
+    },
+    {
+      "name": ":egg:",
+      "long": "🥚",
+      "description": "Add or update an easter egg"
+    },
+    {
+      "name": ":see_no_evil:",
+      "long": "🙈",
+      "description": "Add or update a .gitignore file"
+    },
+    {
+      "name": ":camera_flash:",
+      "long": "📸",
+      "description": "Add or update snapshots"
+    },
+    {
+      "name": ":alembic:",
+      "long": "⚗️",
+      "description": "Perform experiments"
+    },
+    {
+      "name": ":mag:",
+      "long": "🔍️",
+      "description": "Improve SEO"
+    },
+    {
+      "name": ":label:",
+      "long": "🏷️",
+      "description": "Add or update types"
+    },
+    {
+      "name": ":seedling:",
+      "long": "🌱",
+      "description": "Add or update seed files"
+    },
+    {
+      "name": ":triangular_flag_on_post:",
+      "long": "🚩",
+      "description": "Add, update, or remove feature flags"
+    },
+    {
+      "name": ":goal_net:",
+      "long": "🥅",
+      "description": "Catch errors"
+    },
+    {
+      "name": ":dizzy:",
+      "long": "💫",
+      "description": "Add or update animations and transitions"
+    },
+    {
+      "name": ":wastebasket:",
+      "long": "🗑️",
+      "description": "Deprecate code that needs to be cleaned up"
+    },
+    {
+      "name": ":passport_control:",
+      "long": "🛂",
+      "description": "Work on code related to authorization, roles and permissions"
+    },
+    {
+      "name": ":adhesive_bandage:",
+      "long": "🩹",
+      "description": "Simple fix for a non-critical issue"
+    },
+    {
+      "name": ":monocle_face:",
+      "long": "🧐",
+      "description": "Data exploration/inspection"
+    },
+    {
+      "name": ":coffin:",
+      "long": "⚰️",
+      "description": "Remove dead code"
+    },
+    {
+      "name": ":test_tube:",
+      "long": "🧪",
+      "description": "Add a failing test"
+    },
+    {
+      "name": ":necktie:",
+      "long": "👔",
+      "description": "Add or update business logic"
+    },
+    {
+      "name": ":stethoscope:",
+      "long": "🩺",
+      "description": "Add or update healthcheck"
+    },
+    {
+      "name": ":bricks:",
+      "long": "🧱",
+      "description": "Infrastructure related changes"
+    },
+    {
+      "name": ":technologist:",
+      "long": "🧑‍💻",
+      "description": "Improve developer experience"
+    },
+    {
+      "name": ":money_with_wings:",
+      "long": "💸",
+      "description": "Add sponsorships or money related infrastructure"
+    },
+    {
+      "name": ":thread:",
+      "long": "🧵",
+      "description": "Add or update code related to multithreading or concurrency"
+    },
+    {
+      "name": ":safety_vest:",
+      "long": "🦺",
+      "description": "Add or update code related to validation"
+    },
+    {
+        "name": "None",
+        "long": "No gitmoji",
+        "description": "Don't insert a gitmoji in the commit message"
+    }
+  ]
 }
