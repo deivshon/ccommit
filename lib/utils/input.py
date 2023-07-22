@@ -84,7 +84,7 @@ def input_detect_esc(
             else:
                 stdscr.addstr(2, 0, char_count)
 
-            stdscr.move(1, len(buf))
+            stdscr.move(1, len(buf) + len(line_prompt))
 
     stdscr.clear()
     curses.set_escdelay(default_escdelay)
