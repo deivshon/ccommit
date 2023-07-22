@@ -15,8 +15,9 @@ def input_detect_esc(
     ESC_KEY = 27
     KEY_BACKSPACE = 127
 
-    RED_COLOR = 1
-    YELLOW_COLOR = 2
+    RED = 1
+    YELLOW = 2
+    BLUE = 3
 
     default_escdelay = curses.get_escdelay()
     stdscr = curses.initscr()
@@ -24,8 +25,9 @@ def input_detect_esc(
     curses.noecho()
     curses.set_escdelay(1)
     curses.start_color()
-    curses.init_pair(RED_COLOR, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(YELLOW_COLOR, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(RED, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(YELLOW, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(BLUE, curses.COLOR_BLUE, curses.COLOR_BLACK)
     stdscr.keypad(True)
 
     if prompt is not None:
@@ -34,7 +36,7 @@ def input_detect_esc(
         stdscr.addstr(2, 0, "0")
         stdscr.move(1, 0)
 
-    stdscr.addstr(line_prompt)
+    stdscr.addstr(line_prompt, curses.color_pair(BLUE) | curses.A_BOLD)
 
     buf = ""
     while True:
@@ -74,10 +76,11 @@ def input_detect_esc(
 
             char_count = str(len(buf))
             if len(buf) > 0.75 * len_limit:
-                stdscr.addstr(2, 0, char_count, curses.color_pair(RED_COLOR))
+                stdscr.addstr(2, 0, char_count,
+                              curses.color_pair(RED) | curses.A_BOLD)
             elif len(buf) > 0.5 * len_limit:
                 stdscr.addstr(2, 0, char_count,
-                              curses.color_pair(YELLOW_COLOR))
+                              curses.color_pair(YELLOW) | curses.A_BOLD)
             else:
                 stdscr.addstr(2, 0, char_count)
 
