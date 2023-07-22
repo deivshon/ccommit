@@ -1,10 +1,11 @@
 import json
-from lib.utils import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
-from typing import List
+from lib.utils import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH, input_detect_esc
+from typing import List, Optional
 from lib.ccommit.base import BaseSelector
 
 NEW_SCOPE = "New scope"
 NEW_SCOPE_ONCE = "New scope (only use once)"
+NO_SCOPE = "No scope"
 
 
 class ScopeSelector(BaseSelector):
@@ -13,7 +14,7 @@ class ScopeSelector(BaseSelector):
 
     def __init__(self):
         self.choice = None
-        self.scopeEntries: List[str] = [NEW_SCOPE, NEW_SCOPE_ONCE]
+        self.scopeEntries: List[str] = [NO_SCOPE, NEW_SCOPE, NEW_SCOPE_ONCE]
         self.__init_entries()
 
     def __init_entries(self):
@@ -46,8 +47,11 @@ class ScopeSelector(BaseSelector):
             f.write(json.dumps(currentSettings, indent=4))
 
     @staticmethod
-    def getNewScope(add=False) -> str:
-        newScope = input()
+    def getNewScope(add=False) -> Optional[str]:
+        newScope = input_detect_esc()
+
+        if newScope == None:
+            return None
 
         if add:
             ScopeSelector.__addScope(newScope)

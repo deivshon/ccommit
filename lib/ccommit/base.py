@@ -1,7 +1,7 @@
 from abc import ABC, abstractproperty
 from simple_term_menu import TerminalMenu
-from lib.utils import SelectionException, build_menu_entry, failure
-from typing import List, Dict
+from lib.utils import build_menu_entry, failure, input_detect_esc
+from typing import List, Dict, Optional
 
 from lib.ccommit.data import OPTION_NAME
 
@@ -15,7 +15,7 @@ class BaseSelector(ABC):
     def menu_title(self) -> str:
         ...
 
-    def select(self):
+    def select(self) -> Optional[str]:
         entries_flat = list(
             map(build_menu_entry, self.entries)
         )
@@ -32,5 +32,13 @@ class BaseSelector(ABC):
                 return selected_entry
             elif isinstance(selected_entry, dict):
                 return selected_entry[OPTION_NAME]
+            else:
+                raise Exception
         else:
-            raise SelectionException
+            return None
+
+
+class InputQuestion():
+    @staticmethod
+    def ask(prompt: Optional[str] = None):
+        return input_detect_esc(prompt)

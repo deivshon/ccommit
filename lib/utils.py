@@ -1,8 +1,9 @@
 import sys
 import os
 import json
+import getch
 
-from typing import Dict
+from typing import Dict, Optional
 
 from lib.ccommit.data import OPTION_NAME, OPTION_LONG, OPTION_DESC
 
@@ -37,3 +38,18 @@ def printerr(msg: str):
 def failure(msg: str, exit_code: int = 1):
     print(f"Failure: {msg}", file=sys.stderr)
     sys.exit(exit_code)
+
+
+def input_detect_esc(prompt: Optional[str] = None) -> str | None:
+    if prompt is not None:
+        print(prompt)
+
+    buf = ""
+    while True:
+        key_stroke = getch.getche()
+        if ord(key_stroke) == 27:
+            return None
+        elif ord(key_stroke) == 10:
+            return buf
+        else:
+            buf += key_stroke
