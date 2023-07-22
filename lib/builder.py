@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Callable, List, Optional
-from lib.ccommit.base import BaseSelector, InputQuestion
-from lib.ccommit.type import TypeSelector
-from lib.ccommit.scope import ScopeSelector, NO_SCOPE, NEW_SCOPE, NEW_SCOPE_ONCE
-from lib.ccommit.gitmoji import NO_GITMOJI, GitmojiSelector
+from lib.selectors.base import BaseSelector, InputQuestion
+from lib.selectors.type import TypeSelector
+from lib.selectors.scope import ScopeSelector, NO_SCOPE, NEW_SCOPE, NEW_SCOPE_ONCE
+from lib.selectors.gitmoji import NO_GITMOJI, GitmojiSelector
 from enum import Enum
 
 

@@ -7,7 +7,8 @@ import curses
 def input_detect_esc(
     prompt: Optional[str] = None,
     len_limit: Optional[int] = None,
-    refuse_empty: bool = False
+    refuse_empty: bool = False,
+    line_prompt: str = "> "
 ) -> Optional[str]:
     KEY_ENTER = 10
     KEY_CTRLW = 23
@@ -32,6 +33,8 @@ def input_detect_esc(
     if len_limit is not None:
         stdscr.addstr(2, 0, "0")
         stdscr.move(1, 0)
+
+    stdscr.addstr(line_prompt)
 
     buf = ""
     while True:

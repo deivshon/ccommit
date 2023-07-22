@@ -2,7 +2,7 @@ import json
 
 from typing import List, Optional
 
-from lib.ccommit.base import BaseSelector
+from lib.selectors.base import BaseSelector
 from lib.utils.input import input_detect_esc
 from lib.utils.data import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
 

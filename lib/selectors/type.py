@@ -1,5 +1,5 @@
 from lib.utils.data import SELECTIONS_DATA
-from lib.ccommit.base import BaseSelector
+from lib.selectors.base import BaseSelector
 
 
 class TypeSelector(BaseSelector):

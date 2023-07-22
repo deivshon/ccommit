@@ -1,4 +1,4 @@
-from lib.ccommit.base import BaseSelector
+from lib.selectors.base import BaseSelector
 from lib.utils.data import SELECTIONS_DATA
 
 NO_GITMOJI = "None"
