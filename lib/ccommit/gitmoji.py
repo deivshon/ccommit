@@ -1,5 +1,5 @@
-from lib.utils import SELECTIONS_DATA
 from lib.ccommit.base import BaseSelector
+from lib.utils.data import SELECTIONS_DATA
 
 NO_GITMOJI = "None"
 

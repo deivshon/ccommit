@@ -1,9 +1,11 @@
 from abc import ABC, abstractproperty
 from simple_term_menu import TerminalMenu
-from lib.utils import build_menu_entry, failure, input_detect_esc
+from lib.utils.data import build_menu_entry
+from lib.utils.errors import failure
+from lib.utils.input import input_detect_esc
 from typing import List, Dict, Optional
 
-from lib.ccommit.data import OPTION_NAME
+from lib.utils.data import OPTION_NAME
 
 
 class BaseSelector(ABC):
@@ -39,6 +41,14 @@ class BaseSelector(ABC):
 
 
 class InputQuestion():
-    @staticmethod
-    def ask(prompt: Optional[str] = None):
-        return input_detect_esc(prompt)
+    def __init__(self, prompt: str, len_limit: Optional[int] = None, refuse_empty: bool = False):
+        self.prompt = prompt
+        self.len_limit = len_limit
+        self.refuse_empty = refuse_empty
+
+    def ask(self):
+        return input_detect_esc(
+            self.prompt,
+            self.len_limit,
+            self.refuse_empty
+        )

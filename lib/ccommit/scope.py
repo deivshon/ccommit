@@ -1,7 +1,10 @@
 import json
-from lib.utils import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH, input_detect_esc
+
 from typing import List, Optional
+
 from lib.ccommit.base import BaseSelector
+from lib.utils.input import input_detect_esc
+from lib.utils.data import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
 
 NEW_SCOPE = "New scope"
 NEW_SCOPE_ONCE = "New scope (only use once)"

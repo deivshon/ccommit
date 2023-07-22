@@ -1,4 +1,4 @@
-from lib.tc_commit import main
+from lib.conventional_commit import main
 
 if __name__ == "__main__":
     main()
