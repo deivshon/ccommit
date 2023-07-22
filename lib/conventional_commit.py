@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Callable, List, Optional
 from lib.ccommit.base import BaseSelector, InputQuestion
 from lib.ccommit.type import TypeSelector
@@ -9,6 +10,12 @@ class Action(Enum):
     REPEAT = 0
 
 
+@dataclass
+class SelectorItem():
+    selector: BaseSelector | InputQuestion
+    postOp: Callable[[str], Optional[str] | Action] | None
+
+
 class ConventionalCommit:
     __TYPE_IDX = 0
     __SCOPE_IDX = 1
@@ -17,13 +24,9 @@ class ConventionalCommit:
         self.typeSelector = TypeSelector()
         self.scopeSelector = ScopeSelector()
 
-        self.selectors: List[BaseSelector | InputQuestion] = [
-            self.typeSelector,
-            self.scopeSelector
-        ]
-        self.selectorsOps: List[Callable[[str], Optional[str] | Action] | None] = [
-            None,
-            ConventionalCommit.__post_scope
+        self.selectors: List[SelectorItem] = [
+            SelectorItem(self.typeSelector, None),
+            SelectorItem(self.scopeSelector, ConventionalCommit.__post_scope)
         ]
 
         self.type = None
@@ -34,15 +37,16 @@ class ConventionalCommit:
         results = [""] * len(self.selectors)
 
         while i < len(self.selectors):
-            currentSelector = self.selectors[i]
+            currentSelector = self.selectors[i].selector
+            currentPostOp = self.selectors[i].postOp
+
             if isinstance(currentSelector, BaseSelector):
                 currentResult = currentSelector.select()
             else:
                 currentResult = currentSelector.ask()
 
-            postOpFunction = self.selectorsOps[i]
-            if currentResult is not None and postOpFunction is not None:
-                currentResult = postOpFunction(currentResult)
+            if currentResult is not None and currentPostOp is not None:
+                currentResult = currentPostOp(currentResult)
 
             if currentResult == Action.REPEAT:
                 continue
