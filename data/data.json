@@ -1,0 +1,14 @@
+{
+    "type": [
+        {
+            "name": "feat",
+            "long": "Feature",
+            "description": "A new feature"
+        },
+        {
+            "name": "fix",
+            "long": "Bug Fixes",
+            "description": "A bug fix"
+        }
+    ]
+}
