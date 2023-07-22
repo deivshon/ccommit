@@ -48,7 +48,11 @@ class ScopeSelector(BaseSelector):
 
     @staticmethod
     def getNewScope(add=False) -> Optional[str]:
-        newScope = input_detect_esc()
+        prompt = "Enter new scope"
+        if not add:
+            prompt += " (only use once)"
+
+        newScope = input_detect_esc(prompt)
 
         if newScope == None:
             return None
