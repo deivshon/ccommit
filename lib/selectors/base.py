@@ -25,8 +25,16 @@ class BaseSelector(ABC):
         if (len(entries_flat) == 0):
             failure(f"No entries available for {str(self)}")
 
-        menu = TerminalMenu(entries_flat, clear_screen=True,
-                            title=self.menu_title)
+        menu = TerminalMenu(
+            entries_flat,
+            clear_screen=True,
+            title=self.menu_title,
+            skip_empty_entries=True,
+            search_highlight_style=("fg_black", "bg_green", "bold"),
+            menu_highlight_style=("bg_blue", "bold"),
+            menu_cursor_style=("fg_blue", "bold")
+        )
+
         selection = menu.show()
         if (isinstance(selection, int)):
             selected_entry = self.entries[selection]
