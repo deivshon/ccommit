@@ -104,7 +104,7 @@ class ConventionalCommitBuilder():
         )
 
     def __compute_length_limits(self, results: List[str]):
-        short_desc_limit = 72 - len(ConventionalCommitBuilder.__build_short_commit_message(
+        short_desc_limit = 71 - len(ConventionalCommitBuilder.__build_short_commit_message(
             results[ConventionalCommitBuilder.__TYPE_IDX],
             results[ConventionalCommitBuilder.__SCOPE_IDX],
             results[ConventionalCommitBuilder.__GITMOJI_IDX],
