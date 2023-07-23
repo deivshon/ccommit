@@ -1,5 +1,5 @@
 from math import log10
-from typing import Optional
+from typing import Optional, Tuple
 
 import curses
 
@@ -7,26 +7,36 @@ __KEY_ENTER = 10
 __KEY_CTRLW = 23
 __ESC_KEY = 27
 __KEY_BACKSPACE = 127
+__KEY_RIGHT = 261
+__KEY_LEFT = 260
 
 __RED_PAIR = 1
 __YELLOW_PAIR = 2
 __BLUE_PAIR = 3
+__GREEN_PAIR = 4
+
+__INPUT_Y = 1
 
 
-def __remove_spaces_until_char(buf: str, screen: curses.window) -> str:
-    while len(buf) > 0 and buf[-1] == " ":
-        buf = buf[:-1]
-        screen.addstr("\b \b")
+def __remove_single_char(buf: str, pos: int, screen: curses.window) -> Tuple[str, int]:
+    buf = buf[0:max(pos - 1, 0)] + buf[pos:len(buf)]
+    screen.addstr("\b \b")
+    pos -= 1
+    return buf, pos
 
-    return buf
+
+def __remove_spaces_until_char(buf: str, pos: int, screen: curses.window) -> Tuple[str, int]:
+    while len(buf) > (pos - 1) and pos > 0 and buf[pos - 1] == " ":
+        buf, pos = __remove_single_char(buf, pos, screen)
+
+    return buf, pos
 
 
-def __remove_chars_until_space(buf: str, screen: curses.window) -> str:
-    while len(buf) > 0 and buf[-1] != " ":
-        buf = buf[:-1]
-        screen.addstr("\b \b")
+def __remove_chars_until_space(buf: str, pos: int, screen: curses.window) -> Tuple[str, int]:
+    while len(buf) > (pos - 1) and pos > 0 and buf[pos - 1] != " ":
+        buf, pos = __remove_single_char(buf, pos, screen)
 
-    return buf
+    return buf, pos
 
 
 def __draw_current_length(buf: str, len_limit: int, screen: curses.window, prompt_length: int):
@@ -41,9 +51,24 @@ def __draw_current_length(buf: str, len_limit: int, screen: curses.window, promp
         screen.addstr(2, 0, char_count,
                       curses.color_pair(__YELLOW_PAIR) | curses.A_BOLD)
     else:
-        screen.addstr(2, 0, char_count)
+        screen.addstr(2, 0, char_count,
+                      curses.color_pair(__GREEN_PAIR) | curses.A_BOLD)
 
     screen.move(1, len(buf) + prompt_length)
+
+
+def __draw_buf(
+    buf: str,
+    pos: int,
+    screen: curses.window,
+    line_limit: int,
+    prompt_length: int
+):
+    screen.move(__INPUT_Y, prompt_length)
+    screen.addstr(" " * line_limit)
+    screen.move(__INPUT_Y, prompt_length)
+    screen.addstr(buf)
+    screen.move(__INPUT_Y, prompt_length + pos)
 
 
 def input_detect_esc(
@@ -55,23 +80,33 @@ def input_detect_esc(
     default_escdelay = curses.get_escdelay()
     stdscr = curses.initscr()
 
+    _, max_x = stdscr.getmaxyx()
+    if len_limit is not None:
+        if len_limit > max_x:
+            len_limit = max_x
+        else:
+            max_x = len_limit
+
     curses.noecho()
     curses.set_escdelay(1)
     curses.start_color()
     curses.init_pair(__RED_PAIR, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(__YELLOW_PAIR, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     curses.init_pair(__BLUE_PAIR, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(__GREEN_PAIR, curses.COLOR_GREEN, curses.COLOR_BLACK)
     stdscr.keypad(True)
 
     if prompt is not None:
         stdscr.addstr(prompt + "\n")
     if len_limit is not None:
-        stdscr.addstr(2, 0, "0")
+        stdscr.addstr(2, 0, "0", curses.color_pair(
+            __GREEN_PAIR) | curses.A_BOLD)
         stdscr.move(1, 0)
 
     stdscr.addstr(line_prompt, curses.color_pair(__BLUE_PAIR) | curses.A_BOLD)
 
     buf = ""
+    pos = 0
     while True:
         key = stdscr.getch()
 
@@ -84,23 +119,35 @@ def input_detect_esc(
 
             break
         elif key == curses.KEY_BACKSPACE or key == __KEY_BACKSPACE:
-            if len(buf) > 0:
-                buf = buf[:-1]
-                stdscr.addstr("\b \b")
-        elif key == __KEY_CTRLW:
-            if len(buf) == 0:
-                continue
-            elif buf[-1] == " ":
-                buf = __remove_spaces_until_char(buf, stdscr)
+            if len(buf) > 0 and pos != 0:
+                buf, pos = __remove_single_char(buf, pos, stdscr)
 
-            buf = __remove_chars_until_space(buf, stdscr)
+        elif key == __KEY_CTRLW:
+            if len(buf) == 0 or pos == 0:
+                continue
+            elif buf[pos - 1] == " ":
+                buf, pos = __remove_spaces_until_char(buf, pos, stdscr)
+
+            buf, pos = __remove_chars_until_space(buf, pos, stdscr)
+        elif key == __KEY_RIGHT:
+            if pos < len(buf):
+                pos += 1
+                stdscr.move(1, pos + len(line_prompt))
+        elif key == __KEY_LEFT:
+            if pos > 0:
+                pos -= 1
+                stdscr.move(1, pos + len(line_prompt))
         else:
             if len_limit is None or len(buf) < len_limit:
-                buf += chr(key)
+                buf = buf[0:pos] + chr(key) + buf[pos:len(buf)]
                 stdscr.addstr(chr(key))
+                pos += 1
 
         if len_limit is not None:
             __draw_current_length(buf, len_limit, stdscr, len(line_prompt))
+
+        __draw_buf(buf, pos, stdscr, max_x, len(line_prompt))
+        stdscr.refresh()
 
     stdscr.clear()
     curses.set_escdelay(default_escdelay)
