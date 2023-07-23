@@ -21,6 +21,8 @@ __KEY_RIGHT = 261
 __KEY_LEFT = 260
 __KEY_CTRL_LEFT = 552
 __KEY_CTRL_RIGHT = 567
+__KEY_CTRL_A = 1
+__KEY_CTRL_E = 5
 
 __RED_PAIR = 1
 __YELLOW_PAIR = 2
@@ -239,6 +241,10 @@ def input_detect_esc(
             pos = __handle_ctrl_left(buf, pos)
         elif key == __KEY_CTRL_RIGHT:
             pos = __handle_ctrl_right(buf, pos)
+        elif key == __KEY_CTRL_A:
+            pos = 0
+        elif key == __KEY_CTRL_E:
+            pos = len(buf)
         elif __is_ascii(key):
             within_len_limit = len_limit is None or len(buf) < len_limit
             within_max_x = len(buf) + len(line_prompt) < max_x
