@@ -1,15 +1,21 @@
+import os
 import sys
-import subprocess
 
+from lib.utils import git
+from lib.utils.errors import failure
 from lib.builder import ConventionalCommitBuilder
 
 
 def main():
+    cwd = os.getcwd()
+    if not git.inside_repository(cwd):
+        failure("Can't commit outside of a git repository")
+    if not git.changes_added(cwd):
+        failure("Can't commit without changes added")
+
     cc = ConventionalCommitBuilder()
-    commitMessage = cc.interrogate()
-    if commitMessage is None:
+    commit_message = cc.interrogate()
+    if commit_message is None:
         sys.exit(0)
 
-    subprocess.run(
-        ["git", "commit", "-m", commitMessage.short_message,
-            "-m", commitMessage.long_message])
+    git.commit(cwd, commit_message)
