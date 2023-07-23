@@ -206,6 +206,8 @@ def input_detect_esc(
             __GREEN_PAIR) | curses.A_BOLD)
         stdscr.move(1, 0)
 
+        start_text = start_text[:len_limit]
+
     stdscr.addstr(line_prompt, curses.color_pair(__BLUE_PAIR) | curses.A_BOLD)
 
     buf = start_text
