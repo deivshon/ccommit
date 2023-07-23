@@ -1,5 +1,5 @@
 from math import log10
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 from enum import Enum
 import curses
 
@@ -7,6 +7,10 @@ import curses
 class Direction(Enum):
     RIGHT = 1
     LEFT = -1
+
+
+class UnknownEscapeSequence(Enum):
+    UNKNOWN = 0
 
 
 __KEY_ENTER = 10
@@ -28,6 +32,10 @@ __INPUT_Y = 1
 __SEQ_ONLY_ESC = (-1, -1, -1, -1, -1)
 __SEQ_CTRL_RIGHT = (91, 49, 59, 53, 67)
 __SEQ_CTRL_LEFT = (91, 49, 59, 53, 68)
+
+
+def __is_ascii(key: int) -> bool:
+    return 32 <= key <= 126
 
 
 def __remove_single_char(buf: str, pos: int, screen: curses.window) -> Tuple[str, int]:
@@ -97,7 +105,7 @@ def __handle_ctrl_right(buf: str, pos: int) -> int:
     return pos
 
 
-def __handle_escape_seq(buf: str, pos: int, screen: curses.window) -> Optional[int]:
+def __handle_escape_seq(buf: str, pos: int, screen: curses.window) -> Optional[int] | UnknownEscapeSequence:
     screen.nodelay(True)
     sequence = (
         screen.getch(),
@@ -115,7 +123,7 @@ def __handle_escape_seq(buf: str, pos: int, screen: curses.window) -> Optional[i
     elif sequence == __SEQ_ONLY_ESC:
         return None
     else:
-        raise Exception
+        return UnknownEscapeSequence.UNKNOWN
 
     return pos
 
@@ -195,7 +203,11 @@ def input_detect_esc(
         key = stdscr.getch()
 
         if key == __ESC_KEY:
-            pos = __handle_escape_seq(buf, pos, stdscr)
+            new_pos = __handle_escape_seq(buf, pos, stdscr)
+            if isinstance(new_pos, UnknownEscapeSequence):
+                continue
+
+            pos = new_pos
             if pos is None:
                 buf = None
                 break
@@ -227,13 +239,15 @@ def input_detect_esc(
             pos = __handle_ctrl_left(buf, pos)
         elif key == __KEY_CTRL_RIGHT:
             pos = __handle_ctrl_right(buf, pos)
-        else:
+        elif __is_ascii(key):
             within_len_limit = len_limit is None or len(buf) < len_limit
             within_max_x = len(buf) + len(line_prompt) < max_x
             if within_len_limit and within_max_x:
                 buf = buf[0:pos] + chr(key) + buf[pos:len(buf)]
                 stdscr.addstr(chr(key))
                 pos += 1
+        else:
+            continue
 
         if len_limit is not None:
             __draw_current_length(buf, len_limit, stdscr, len(line_prompt))
