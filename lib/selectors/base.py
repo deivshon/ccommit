@@ -55,10 +55,10 @@ class InputQuestion():
         self.refuse_empty = refuse_empty
         self.last_text = ""
 
-    def ask(self):
+    def ask(self, len_limit: Optional[int] = None):
         input_text = input_detect_esc(
             prompt=self.prompt,
-            len_limit=self.len_limit,
+            len_limit=self.len_limit if len_limit is None else len_limit,
             refuse_empty=self.refuse_empty,
             start_text=self.last_text
         )

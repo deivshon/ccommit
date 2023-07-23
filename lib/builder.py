@@ -52,6 +52,7 @@ class ConventionalCommitBuilder():
             _SelectorItem(self.longDescSelector, None),
             _SelectorItem(self.breakingChangesSelector, None)
         ]
+        self.lengthLimits: List[Optional[int]] = [None] * len(self.selectors)
 
         self.type = None
         self.scope = None
@@ -67,7 +68,8 @@ class ConventionalCommitBuilder():
             if isinstance(currentSelector, BaseSelector):
                 currentResult = currentSelector.select()
             else:
-                currentResult = currentSelector.ask()
+                currentResult = currentSelector.ask(
+                    len_limit=self.lengthLimits[i])
 
             if currentResult is not None and currentPostOp is not None:
                 currentResult = currentPostOp(currentResult)
@@ -85,6 +87,8 @@ class ConventionalCommitBuilder():
                 results[i] = currentResult
                 i += 1
 
+            self.__compute_length_limits(results)
+
         return ConventionalCommit(
             short_message=ConventionalCommitBuilder.__build_short_commit_message(
                 results[ConventionalCommitBuilder.__TYPE_IDX],
@@ -98,6 +102,15 @@ class ConventionalCommitBuilder():
                 results[ConventionalCommitBuilder.__BREAKING_CHANGES_IDX],
             )
         )
+
+    def __compute_length_limits(self, results: List[str]):
+        short_desc_limit = 72 - len(ConventionalCommitBuilder.__build_short_commit_message(
+            results[ConventionalCommitBuilder.__TYPE_IDX],
+            results[ConventionalCommitBuilder.__SCOPE_IDX],
+            results[ConventionalCommitBuilder.__GITMOJI_IDX],
+            ""
+        ))
+        self.lengthLimits[ConventionalCommitBuilder.__SHORT_DESC_IDX] = short_desc_limit
 
     @staticmethod
     def __post_scope(selected: str) -> Optional[str] | Action:
@@ -135,7 +148,8 @@ class ConventionalCommitBuilder():
         if len(gitmoji) != 0:
             commit_message += f" {gitmoji}"
 
-        commit_message += f" {short_description}"
+        if len(short_description) != 0:
+            commit_message += f" {short_description}"
         return commit_message
 
     @staticmethod
