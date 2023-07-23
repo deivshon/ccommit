@@ -83,9 +83,12 @@ def input_detect_esc(
     _, max_x = stdscr.getmaxyx()
     if len_limit is not None:
         if len_limit > max_x:
+            max_x -= 1
             len_limit = max_x
         else:
             max_x = len_limit
+    else:
+        max_x -= 1
 
     curses.noecho()
     curses.set_escdelay(1)
@@ -138,7 +141,9 @@ def input_detect_esc(
                 pos -= 1
                 stdscr.move(1, pos + len(line_prompt))
         else:
-            if len_limit is None or len(buf) < len_limit:
+            within_len_limit = len_limit is None or len(buf) < len_limit
+            within_max_x = len(buf) + len(line_prompt) < max_x
+            if within_len_limit and within_max_x:
                 buf = buf[0:pos] + chr(key) + buf[pos:len(buf)]
                 stdscr.addstr(chr(key))
                 pos += 1
