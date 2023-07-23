@@ -15,6 +15,8 @@ __ESC_KEY = 27
 __KEY_BACKSPACE = 127
 __KEY_RIGHT = 261
 __KEY_LEFT = 260
+__KEY_CTRL_LEFT = 552
+__KEY_CTRL_RIGHT = 567
 
 __RED_PAIR = 1
 __YELLOW_PAIR = 2
@@ -221,6 +223,10 @@ def input_detect_esc(
             if pos > 0:
                 pos -= 1
                 stdscr.move(1, pos + len(line_prompt))
+        elif key == __KEY_CTRL_LEFT:
+            pos = __handle_ctrl_left(buf, pos)
+        elif key == __KEY_CTRL_RIGHT:
+            pos = __handle_ctrl_right(buf, pos)
         else:
             within_len_limit = len_limit is None or len(buf) < len_limit
             within_max_x = len(buf) + len(line_prompt) < max_x
