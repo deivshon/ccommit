@@ -2,7 +2,7 @@ from abc import ABC, abstractproperty
 from simple_term_menu import TerminalMenu
 from lib.utils.data import build_menu_entry
 from lib.utils.errors import failure
-from lib.utils.input import input_detect_esc
+from lib.utils.input import FinalState, input_detect_esc
 from typing import List, Dict, Optional
 
 from lib.utils.data import OPTION_NAME
@@ -53,10 +53,18 @@ class InputQuestion():
         self.prompt = prompt
         self.len_limit = len_limit
         self.refuse_empty = refuse_empty
+        self.last_text = ""
 
     def ask(self):
-        return input_detect_esc(
-            self.prompt,
-            self.len_limit,
-            self.refuse_empty
+        input_text = input_detect_esc(
+            prompt=self.prompt,
+            len_limit=self.len_limit,
+            refuse_empty=self.refuse_empty,
+            start_text=self.last_text
         )
+        self.last_text = input_text.text
+
+        if input_text.state == FinalState.EXITED:
+            return None
+        else:
+            return self.last_text

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from math import log10
 from typing import Optional, Tuple, Union
 from enum import Enum
@@ -11,6 +12,17 @@ class Direction(Enum):
 
 class UnknownEscapeSequence(Enum):
     UNKNOWN = 0
+
+
+class FinalState(Enum):
+    ENTERED = 0
+    EXITED = 1
+
+
+@dataclass
+class TextInputResult():
+    text: str
+    state: FinalState
 
 
 __KEY_ENTER = 10
@@ -166,8 +178,9 @@ def input_detect_esc(
     prompt: Optional[str] = None,
     len_limit: Optional[int] = None,
     refuse_empty: bool = False,
-    line_prompt: str = "> "
-) -> Optional[str]:
+    line_prompt: str = "> ",
+    start_text: str = ""
+) -> TextInputResult:
     default_escdelay = curses.get_escdelay()
     stdscr = curses.initscr()
 
@@ -195,8 +208,11 @@ def input_detect_esc(
 
     stdscr.addstr(line_prompt, curses.color_pair(__BLUE_PAIR) | curses.A_BOLD)
 
-    buf = ""
-    pos = 0
+    buf = start_text
+    pos = len(start_text)
+    __draw_buf(buf, pos, stdscr, usable_space, len(line_prompt))
+
+    final_state = FinalState.ENTERED
     while True:
         key = stdscr.getch()
 
@@ -207,7 +223,7 @@ def input_detect_esc(
 
             pos = new_pos
             if pos is None:
-                buf = None
+                final_state = FinalState.EXITED
                 break
         elif key == __KEY_ENTER:
             if refuse_empty and len(buf) == 0:
@@ -261,4 +277,4 @@ def input_detect_esc(
     curses.set_escdelay(default_escdelay)
     curses.endwin()
 
-    return buf
+    return TextInputResult(buf, final_state)

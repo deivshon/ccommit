@@ -3,7 +3,7 @@ import json
 from typing import List, Optional
 
 from lib.selectors.base import BaseSelector
-from lib.utils.input import input_detect_esc
+from lib.utils.input import FinalState, input_detect_esc
 from lib.utils.data import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
 
 NEW_SCOPE = "New scope"
@@ -55,13 +55,13 @@ class ScopeSelector(BaseSelector):
         if not add:
             prompt += " (only use once)"
 
-        newScope = input_detect_esc(
+        new_scope = input_detect_esc(
             prompt=prompt, refuse_empty=True)
 
-        if newScope == None:
+        if new_scope.state == FinalState.EXITED:
             return None
 
         if add:
-            ScopeSelector.__addScope(newScope)
+            ScopeSelector.__addScope(new_scope.text)
 
-        return newScope
+        return new_scope.text
