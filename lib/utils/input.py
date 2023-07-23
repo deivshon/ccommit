@@ -152,11 +152,11 @@ def __draw_buf(
     buf: str,
     pos: int,
     screen: curses.window,
-    line_limit: int,
+    dirty_segment_length: int,
     prompt_length: int
 ):
     screen.move(__INPUT_Y, prompt_length)
-    screen.addstr(" " * line_limit)
+    screen.addstr(" " * dirty_segment_length)
     screen.move(__INPUT_Y, prompt_length)
     screen.addstr(buf)
     screen.move(__INPUT_Y, prompt_length + pos)
@@ -172,14 +172,10 @@ def input_detect_esc(
     stdscr = curses.initscr()
 
     _, max_x = stdscr.getmaxyx()
-    if len_limit is not None:
-        if len_limit > max_x:
-            max_x -= 1
-            len_limit = max_x
-        else:
-            max_x = len_limit
-    else:
-        max_x -= 1
+    max_x -= 1
+    usable_space = max_x - len(line_prompt)
+    if len_limit is not None and len_limit + len(line_prompt) > max_x:
+        len_limit = usable_space
 
     curses.noecho()
     curses.set_escdelay(1)
@@ -258,7 +254,7 @@ def input_detect_esc(
         if len_limit is not None:
             __draw_current_length(buf, len_limit, stdscr, len(line_prompt))
 
-        __draw_buf(buf, pos, stdscr, max_x, len(line_prompt))
+        __draw_buf(buf, pos, stdscr, usable_space, len(line_prompt))
         stdscr.refresh()
 
     stdscr.clear()
