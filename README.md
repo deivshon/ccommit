@@ -1,4 +1,4 @@
-# tc-commit
+# ccommit
 Conventional commits from the terminal
 
 ## Limitations
