@@ -1,7 +1,13 @@
 from math import log10
 from typing import Optional, Tuple
-
+from enum import Enum
 import curses
+
+
+class Direction(Enum):
+    RIGHT = 1
+    LEFT = -1
+
 
 __KEY_ENTER = 10
 __KEY_CTRLW = 23
@@ -16,6 +22,10 @@ __BLUE_PAIR = 3
 __GREEN_PAIR = 4
 
 __INPUT_Y = 1
+
+__SEQ_ONLY_ESC = (-1, -1, -1, -1, -1)
+__SEQ_CTRL_RIGHT = (91, 49, 59, 53, 67)
+__SEQ_CTRL_LEFT = (91, 49, 59, 53, 68)
 
 
 def __remove_single_char(buf: str, pos: int, screen: curses.window) -> Tuple[str, int]:
@@ -37,6 +47,75 @@ def __remove_chars_until_space(buf: str, pos: int, screen: curses.window) -> Tup
         buf, pos = __remove_single_char(buf, pos, screen)
 
     return buf, pos
+
+
+def __skip_chars_until_space(buf: str, pos: int, direction: Direction) -> int:
+    if direction == Direction.LEFT:
+        while len(buf) > (pos - 1) and pos > 0 and buf[pos - 1] != " ":
+            pos -= 1
+    else:
+        while pos < len(buf) and buf[pos] != " ":
+            pos += 1
+
+    return pos
+
+
+def __skip_chars_until_char(buf: str, pos: int, direction: Direction) -> int:
+    if direction == Direction.LEFT:
+        while len(buf) > (pos - 1) and pos > 0 and buf[pos - 1] == " ":
+            pos -= 1
+    else:
+        while pos < len(buf) and buf[pos] == " ":
+            pos += 1
+
+    return pos
+
+
+def __handle_ctrl_left(buf: str, pos: int) -> int:
+    if pos == 0:
+        return pos
+
+    if buf[pos - 1] == " ":
+        pos = __skip_chars_until_char(buf, pos, Direction.LEFT)
+
+    pos = __skip_chars_until_space(buf, pos, Direction.LEFT)
+
+    return pos
+
+
+def __handle_ctrl_right(buf: str, pos: int) -> int:
+    if pos >= len(buf):
+        return pos
+
+    if buf[pos] == " ":
+        pos = __skip_chars_until_char(buf, pos, Direction.RIGHT)
+
+    pos = __skip_chars_until_space(buf, pos, Direction.RIGHT)
+
+    return pos
+
+
+def __handle_escape_seq(buf: str, pos: int, screen: curses.window) -> Optional[int]:
+    screen.nodelay(True)
+    sequence = (
+        screen.getch(),
+        screen.getch(),
+        screen.getch(),
+        screen.getch(),
+        screen.getch()
+    )
+    screen.nodelay(False)
+
+    if sequence == __SEQ_CTRL_LEFT:
+        pos = __handle_ctrl_left(buf, pos)
+    elif sequence == __SEQ_CTRL_RIGHT:
+        pos = __handle_ctrl_right(buf, pos)
+    elif sequence == __SEQ_ONLY_ESC:
+        return None
+    else:
+        raise Exception
+
+    return pos
 
 
 def __draw_current_length(buf: str, len_limit: int, screen: curses.window, prompt_length: int):
@@ -114,8 +193,10 @@ def input_detect_esc(
         key = stdscr.getch()
 
         if key == __ESC_KEY:
-            buf = None
-            break
+            pos = __handle_escape_seq(buf, pos, stdscr)
+            if pos is None:
+                buf = None
+                break
         elif key == __KEY_ENTER:
             if refuse_empty and len(buf) == 0:
                 continue
