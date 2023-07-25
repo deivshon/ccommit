@@ -59,372 +59,372 @@
   "gitmoji": [
     {
       "name": ":art:",
-      "long": "🎨",
+      "long": "",
       "description": "Improve structure / format of the code"
     },
     {
       "name": ":zap:",
-      "long": "⚡️",
+      "long": "",
       "description": "Improve performance"
     },
     {
       "name": ":fire:",
-      "long": "🔥",
+      "long": "",
       "description": "Remove code or files"
     },
     {
       "name": ":bug:",
-      "long": "🐛",
+      "long": "",
       "description": "Fix a bug"
     },
     {
       "name": ":ambulance:",
-      "long": "🚑️",
+      "long": "",
       "description": "Critical hotfix"
     },
     {
       "name": ":sparkles:",
-      "long": "✨",
+      "long": "",
       "description": "Introduce new features"
     },
     {
       "name": ":memo:",
-      "long": "📝",
+      "long": "",
       "description": "Add or update documentation"
     },
     {
       "name": ":rocket:",
-      "long": "🚀",
+      "long": "",
       "description": "Deploy stuff"
     },
     {
       "name": ":lipstick:",
-      "long": "💄",
+      "long": "",
       "description": "Add or update the UI and style files"
     },
     {
       "name": ":tada:",
-      "long": "🎉",
+      "long": "",
       "description": "Begin a project"
     },
     {
       "name": ":white_check_mark:",
-      "long": "✅",
+      "long": "",
       "description": "Add, update, or pass tests"
     },
     {
       "name": ":lock:",
-      "long": "🔒️",
+      "long": "",
       "description": "Fix security issues"
     },
     {
       "name": ":closed_lock_with_key:",
-      "long": "🔐",
+      "long": "",
       "description": "Add or update secrets"
     },
     {
       "name": ":bookmark:",
-      "long": "🔖",
+      "long": "",
       "description": "Release / Version tags"
     },
     {
       "name": ":rotating_light:",
-      "long": "🚨",
+      "long": "",
       "description": "Fix compiler / linter warnings"
     },
     {
       "name": ":construction:",
-      "long": "🚧",
+      "long": "",
       "description": "Work in progress"
     },
     {
       "name": ":green_heart:",
-      "long": "💚",
+      "long": "",
       "description": "Fix CI Build"
     },
     {
       "name": ":arrow_down:",
-      "long": "⬇️",
+      "long": "",
       "description": "Downgrade dependencies"
     },
     {
       "name": ":arrow_up:",
-      "long": "⬆️",
+      "long": "",
       "description": "Upgrade dependencies"
     },
     {
       "name": ":pushpin:",
-      "long": "📌",
+      "long": "",
       "description": "Pin dependencies to specific versions"
     },
     {
       "name": ":construction_worker:",
-      "long": "👷",
+      "long": "",
       "description": "Add or update CI build system"
     },
     {
       "name": ":chart_with_upwards_trend:",
-      "long": "📈",
+      "long": "",
       "description": "Add or update analytics or track code"
     },
     {
       "name": ":recycle:",
-      "long": "♻️",
+      "long": "",
       "description": "Refactor code"
     },
     {
       "name": ":heavy_plus_sign:",
-      "long": "➕",
+      "long": "",
       "description": "Add a dependency"
     },
     {
       "name": ":heavy_minus_sign:",
-      "long": "➖",
+      "long": "",
       "description": "Remove a dependency"
     },
     {
       "name": ":wrench:",
-      "long": "🔧",
+      "long": "",
       "description": "Add or update configuration files"
     },
     {
       "name": ":hammer:",
-      "long": "🔨",
+      "long": "",
       "description": "Add or update development scripts"
     },
     {
       "name": ":globe_with_meridians:",
-      "long": "🌐",
+      "long": "",
       "description": "Internationalization and localization"
     },
     {
       "name": ":pencil2:",
-      "long": "✏️",
+      "long": "",
       "description": "Fix typos"
     },
     {
       "name": ":poop:",
-      "long": "💩",
+      "long": "",
       "description": "Write bad code that needs to be improved"
     },
     {
       "name": ":rewind:",
-      "long": "⏪️",
+      "long": "",
       "description": "Revert changes"
     },
     {
       "name": ":twisted_rightwards_arrows:",
-      "long": "🔀",
+      "long": "",
       "description": "Merge branches"
     },
     {
       "name": ":package:",
-      "long": "📦️",
+      "long": "",
       "description": "Add or update compiled files or packages"
     },
     {
       "name": ":alien:",
-      "long": "👽️",
+      "long": "",
       "description": "Update code due to external API changes"
     },
     {
       "name": ":truck:",
-      "long": "🚚",
+      "long": "",
       "description": "Move or rename resources (e.g.: files, paths, routes)"
     },
     {
       "name": ":page_facing_up:",
-      "long": "📄",
+      "long": "",
       "description": "Add or update license"
     },
     {
       "name": ":boom:",
-      "long": "💥",
+      "long": "",
       "description": "Introduce breaking changes"
     },
     {
       "name": ":bento:",
-      "long": "🍱",
+      "long": "",
       "description": "Add or update assets"
     },
     {
       "name": ":wheelchair:",
-      "long": "♿️",
+      "long": "",
       "description": "Improve accessibility"
     },
     {
       "name": ":bulb:",
-      "long": "💡",
+      "long": "",
       "description": "Add or update comments in source code"
     },
     {
       "name": ":beers:",
-      "long": "🍻",
+      "long": "",
       "description": "Write code drunkenly"
     },
     {
       "name": ":speech_balloon:",
-      "long": "💬",
+      "long": "",
       "description": "Add or update text and literals"
     },
     {
       "name": ":card_file_box:",
-      "long": "🗃️",
+      "long": "",
       "description": "Perform database related changes"
     },
     {
       "name": ":loud_sound:",
-      "long": "🔊",
+      "long": "",
       "description": "Add or update logs"
     },
     {
       "name": ":mute:",
-      "long": "🔇",
+      "long": "",
       "description": "Remove logs"
     },
     {
       "name": ":busts_in_silhouette:",
-      "long": "👥",
+      "long": "",
       "description": "Add or update contributor(s)"
     },
     {
       "name": ":children_crossing:",
-      "long": "🚸",
+      "long": "",
       "description": "Improve user experience / usability"
     },
     {
       "name": ":building_construction:",
-      "long": "🏗️",
+      "long": "",
       "description": "Make architectural changes"
     },
     {
       "name": ":iphone:",
-      "long": "📱",
+      "long": "",
       "description": "Work on responsive design"
     },
     {
       "name": ":clown_face:",
-      "long": "🤡",
+      "long": "",
       "description": "Mock things"
     },
     {
       "name": ":egg:",
-      "long": "🥚",
+      "long": "",
       "description": "Add or update an easter egg"
     },
     {
       "name": ":see_no_evil:",
-      "long": "🙈",
+      "long": "",
       "description": "Add or update a .gitignore file"
     },
     {
       "name": ":camera_flash:",
-      "long": "📸",
+      "long": "",
       "description": "Add or update snapshots"
     },
     {
       "name": ":alembic:",
-      "long": "⚗️",
+      "long": "",
       "description": "Perform experiments"
     },
     {
       "name": ":mag:",
-      "long": "🔍️",
+      "long": "",
       "description": "Improve SEO"
     },
     {
       "name": ":label:",
-      "long": "🏷️",
+      "long": "",
       "description": "Add or update types"
     },
     {
       "name": ":seedling:",
-      "long": "🌱",
+      "long": "",
       "description": "Add or update seed files"
     },
     {
       "name": ":triangular_flag_on_post:",
-      "long": "🚩",
+      "long": "",
       "description": "Add, update, or remove feature flags"
     },
     {
       "name": ":goal_net:",
-      "long": "🥅",
+      "long": "",
       "description": "Catch errors"
     },
     {
       "name": ":dizzy:",
-      "long": "💫",
+      "long": "",
       "description": "Add or update animations and transitions"
     },
     {
       "name": ":wastebasket:",
-      "long": "🗑️",
+      "long": "",
       "description": "Deprecate code that needs to be cleaned up"
     },
     {
       "name": ":passport_control:",
-      "long": "🛂",
+      "long": "",
       "description": "Work on code related to authorization, roles and permissions"
     },
     {
       "name": ":adhesive_bandage:",
-      "long": "🩹",
+      "long": "",
       "description": "Simple fix for a non-critical issue"
     },
     {
       "name": ":monocle_face:",
-      "long": "🧐",
+      "long": "",
       "description": "Data exploration/inspection"
     },
     {
       "name": ":coffin:",
-      "long": "⚰️",
+      "long": "",
       "description": "Remove dead code"
     },
     {
       "name": ":test_tube:",
-      "long": "🧪",
+      "long": "",
       "description": "Add a failing test"
     },
     {
       "name": ":necktie:",
-      "long": "👔",
+      "long": "",
       "description": "Add or update business logic"
     },
     {
       "name": ":stethoscope:",
-      "long": "🩺",
+      "long": "",
       "description": "Add or update healthcheck"
     },
     {
       "name": ":bricks:",
-      "long": "🧱",
+      "long": "",
       "description": "Infrastructure related changes"
     },
     {
       "name": ":technologist:",
-      "long": "🧑‍💻",
+      "long": "",
       "description": "Improve developer experience"
     },
     {
       "name": ":money_with_wings:",
-      "long": "💸",
+      "long": "",
       "description": "Add sponsorships or money related infrastructure"
     },
     {
       "name": ":thread:",
-      "long": "🧵",
+      "long": "",
       "description": "Add or update code related to multithreading or concurrency"
     },
     {
       "name": ":safety_vest:",
-      "long": "🦺",
+      "long": "",
       "description": "Add or update code related to validation"
     },
     {
         "name": "None",
-        "long": "No gitmoji",
+        "long": "",
         "description": "Don't insert a gitmoji in the commit message"
     }
   ]

@@ -26,4 +26,12 @@ def build_menu_entry(data_entry: Dict | str) -> str:
     if (isinstance(data_entry, str)):
         return data_entry
     else:
-        return f"{data_entry[OPTION_NAME]} ({data_entry[OPTION_LONG]}; {data_entry[OPTION_DESC]})"
+        entry = data_entry[OPTION_NAME]
+        if len(data_entry[OPTION_LONG]) == 0:
+            entry += f" ({data_entry[OPTION_DESC]})"
+        elif len(data_entry[OPTION_DESC]) == 0:
+            entry += f" ({data_entry[OPTION_LONG]})"
+        else:
+            entry += f" ({data_entry[OPTION_LONG]}; {data_entry[OPTION_DESC]})"
+
+        return entry
