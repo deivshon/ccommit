@@ -31,8 +31,8 @@ __ESC_KEY = 27
 __KEY_BACKSPACE = 127
 __KEY_RIGHT = 261
 __KEY_LEFT = 260
-__KEY_CTRL_LEFT = 552
-__KEY_CTRL_RIGHT = 567
+__KEY_CTRL_LEFT = [552, 553]
+__KEY_CTRL_RIGHT = [567, 568]
 __KEY_CTRL_A = 1
 __KEY_CTRL_E = 5
 
@@ -251,9 +251,9 @@ def input_detect_esc(
             if pos > 0:
                 pos -= 1
                 stdscr.move(1, pos + len(line_prompt))
-        elif key == __KEY_CTRL_LEFT:
+        elif key in __KEY_CTRL_LEFT:
             pos = __handle_ctrl_left(buf, pos)
-        elif key == __KEY_CTRL_RIGHT:
+        elif key in __KEY_CTRL_RIGHT:
             pos = __handle_ctrl_right(buf, pos)
         elif key == __KEY_CTRL_A:
             pos = 0
