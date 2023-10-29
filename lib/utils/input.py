@@ -183,6 +183,8 @@ def input_detect_esc(
 ) -> TextInputResult:
     default_escdelay = curses.get_escdelay()
     stdscr = curses.initscr()
+    curses.start_color()
+    curses.use_default_colors()
 
     _, max_x = stdscr.getmaxyx()
     max_x -= 1
@@ -193,10 +195,10 @@ def input_detect_esc(
     curses.noecho()
     curses.set_escdelay(1)
     curses.start_color()
-    curses.init_pair(__RED_PAIR, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(__YELLOW_PAIR, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(__BLUE_PAIR, curses.COLOR_BLUE, curses.COLOR_BLACK)
-    curses.init_pair(__GREEN_PAIR, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(__RED_PAIR, curses.COLOR_RED, -1)
+    curses.init_pair(__YELLOW_PAIR, curses.COLOR_YELLOW, -1)
+    curses.init_pair(__BLUE_PAIR, curses.COLOR_BLUE, -1)
+    curses.init_pair(__GREEN_PAIR, curses.COLOR_GREEN, -1)
     stdscr.keypad(True)
 
     if prompt is not None:
