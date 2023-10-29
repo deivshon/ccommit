@@ -1,10 +1,10 @@
 import json
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from lib.selectors.base import BaseSelector
 from lib.utils.input import FinalState, input_detect_esc
-from lib.utils.data import VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
+from lib.utils.data import OPTION_NAME, VSCODE_SETTINGS, VSCODE_SETTINGS_PATH
 
 NEW_SCOPE = "New scope"
 NEW_SCOPE_ONCE = "New scope (only use once)"
@@ -65,3 +65,6 @@ class ScopeSelector(BaseSelector):
             ScopeSelector.__addScope(new_scope.text)
 
         return new_scope.text
+
+    def selection_from_dict(self, entry: Dict) -> str:
+        return entry[OPTION_NAME]

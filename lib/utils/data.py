@@ -6,6 +6,7 @@ from typing import Dict
 OPTION_NAME = "name"
 OPTION_LONG = "long"
 OPTION_DESC = "description"
+OPTION_EMOJI = "emoji"
 
 COMMIT_TYPE = "type"
 

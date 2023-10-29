@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-from typing import Callable, List, Optional
-from lib.selectors.base import BaseSelector, InputQuestion
-from lib.selectors.type import TypeSelector
-from lib.selectors.scope import ScopeSelector, NO_SCOPE, NEW_SCOPE, NEW_SCOPE_ONCE
-from lib.selectors.gitmoji import NO_GITMOJI, GitmojiSelector
+
 from enum import Enum
+from typing import Callable, List, Optional
+
+from lib.config import Config
+from lib.selectors.type import TypeSelector
+from lib.selectors.base import BaseSelector, InputQuestion
+from lib.selectors.gitmoji import NO_GITMOJI, GitmojiSelector
+from lib.selectors.scope import ScopeSelector, NO_SCOPE, NEW_SCOPE, NEW_SCOPE_ONCE
 
 
 class Action(Enum):
@@ -31,10 +34,10 @@ class ConventionalCommitBuilder():
     __LONG_DESC_IDX = 4
     __BREAKING_CHANGES_IDX = 5
 
-    def __init__(self):
+    def __init__(self, config: Config):
         self.typeSelector = TypeSelector()
         self.scopeSelector = ScopeSelector()
-        self.gitmojiSelector = GitmojiSelector()
+        self.gitmojiSelector = GitmojiSelector(config.use_emojis)
         self.shortDescSelector = InputQuestion(
             "Write a short, imperative tense description of the change", 72, True)
         self.longDescSelector = InputQuestion(
@@ -56,6 +59,7 @@ class ConventionalCommitBuilder():
 
         self.type = None
         self.scope = None
+        self.config = config
 
     def interrogate(self) -> Optional[ConventionalCommit]:
         i = 0

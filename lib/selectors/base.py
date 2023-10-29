@@ -1,11 +1,11 @@
-from abc import ABC, abstractproperty
 from simple_term_menu import TerminalMenu
-from lib.utils.data import build_menu_entry
-from lib.utils.errors import failure
-from lib.utils.input import FinalState, input_detect_esc
-from typing import List, Dict, Optional
+from abc import ABC, abstractmethod, abstractproperty
+from typing import Dict
 
-from lib.utils.data import OPTION_NAME
+from lib.utils.errors import failure
+from typing import List, Dict, Optional
+from lib.utils.data import build_menu_entry
+from lib.utils.input import FinalState, input_detect_esc
 
 
 class BaseSelector(ABC):
@@ -15,6 +15,10 @@ class BaseSelector(ABC):
 
     @abstractproperty
     def menu_title(self) -> str:
+        ...
+
+    @abstractmethod
+    def selection_from_dict(self, entry: Dict) -> str:
         ...
 
     def select(self) -> Optional[str]:
@@ -41,7 +45,7 @@ class BaseSelector(ABC):
             if isinstance(selected_entry, str):
                 return selected_entry
             elif isinstance(selected_entry, dict):
-                return selected_entry[OPTION_NAME]
+                return self.selection_from_dict(selected_entry)
             else:
                 raise Exception
         else:
