@@ -1,7 +1,11 @@
 {
   "name": "ccommit",
   "scripts": {
-    "fmt": "oxfmt"
+    "build": "cargo build --release --locked",
+    "test": "cargo test",
+    "fmt": "cargo fmt --all && oxfmt",
+    "lint": "cargo clippy --all-targets --all-features -- -D warnings",
+    "fetch-gitmojis": "sh scripts/fetch-gitmojis.sh"
   },
   "devDependencies": {
     "oxfmt": "^0.63.0"

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "feat",
+    "long": "Feature",
+    "description": "A new feature"
+  },
+  {
+    "name": "fix",
+    "long": "Bug Fixes",
+    "description": "A bug fix"
+  },
+  {
+    "name": "docs",
+    "long": "Documentation",
+    "description": "Documentation only changes"
+  },
+  {
+    "name": "style",
+    "long": "Styles",
+    "description": "Changes that do not affect the meaning of the code"
+  },
+  {
+    "name": "refactor",
+    "long": "Code Refactoring",
+    "description": "A code change that neither fixes a bug nor adds a feature"
+  },
+  {
+    "name": "perf",
+    "long": "Performance Improvements",
+    "description": "A code change that improves performance"
+  },
+  {
+    "name": "test",
+    "long": "Tests",
+    "description": "Adding missing tests or correcting existing tests"
+  },
+  {
+    "name": "build",
+    "long": "Builds",
+    "description": "Changes that affect the build system or external dependencies"
+  },
+  {
+    "name": "ci",
+    "long": "Continuous Integration",
+    "description": "Changes to our CI configuration files and scripts"
+  },
+  {
+    "name": "chore",
+    "long": "Chores",
+    "description": "Other changes that don't modify src or test files"
+  },
+  {
+    "name": "revert",
+    "long": "Reverts",
+    "description": "Reverts a previous commit"
+  }
+]

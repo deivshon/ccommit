@@ -33,3 +33,12 @@ No lint rule and no test checks this style. It holds only when you apply it. Rea
 - **Write timeless comments**: a comment describes the code as it is **now**. Never narrate history, iterations, or transitions ("changed to X", "now resolves instead of", "previously we"). That is the job of `git`.
 - **No region-dividing comments** unless the user asks for them.
 - **Precedence**: these rules decide **whether** a comment exists. The Output Style decides **how** it reads.
+
+## Checklist
+
+Once done with a change, run:
+
+- lint -> `pnpm lint`
+- format -> `pnpm fmt`
+- tests -> `pnpm test`
+- build -> `pnpm build`
