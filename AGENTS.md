@@ -1,5 +1,12 @@
 ccommit — conventional commits from the terminal. See `README.md` for usage.
 
+## Shell
+
+- **CRITICAL**: do not **EVER** run `git` commands, with these exceptions:
+  - Read-only inspection is always allowed: `git diff` (any flags and paths) and `git status`.
+  - `git add` and `git commit` are allowed **only** when the user asks for a commit (for example through `/commit`). Never autonomously. Never as a side effect of another task.
+  - Everything else that changes the history, the index, or a remote stays forbidden. This covers checkout, reset, rebase, push, `branch -D`, and every form of `stash`.
+
 ## Output Style
 
 The **Simple English** output style is the default for this repository. It holds the full ASD-STE100 rule catalog: `.claude/output-styles/simple-english.md`.
