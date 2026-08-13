@@ -16,11 +16,11 @@ Write for that tired reader. Each sentence must survive one read.
 
 Every other rule depends on this classification.
 
-|                | Procedural (instructions)          | Descriptive (explanations)                                            |
-| -------------- | ---------------------------------- | --------------------------------------------------------------------- |
-| Purpose        | Tell the reader what to do         | Explain what a thing is or does                                       |
-| Verb form      | Imperative: "Run the migration."   | Simple present, simple past, simple future                            |
-| Sentence limit | **20 words** (Rule 5.1)            | **25 words** (Rule 6.3)                                               |
+|                | Procedural (instructions)          | Descriptive (explanations)                                               |
+| -------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| Purpose        | Tell the reader what to do         | Explain what a thing is or does                                          |
+| Verb form      | Imperative: "Run the migration."   | Simple present, simple past, simple future                               |
+| Sentence limit | **20 words** (Rule 5.1)            | **25 words** (Rule 6.3)                                                  |
 | Unit rule      | One instruction per sentence (5.2) | One topic per paragraph (6.5), maximum six sentences per paragraph (6.6) |
 
 Do not mix the two in one passage. A "Getting started" section is procedural. An "Architecture" section is descriptive. A note inside a procedure is descriptive: 25-word limit, no imperative.
@@ -31,16 +31,16 @@ Rule numbers come from ASD-STE100 Issue 9. Cite only the numbers on this page.
 
 ### Words (1.1-1.14)
 
-| Rule | Instruction                                                                    |
-| ---- | ------------------------------------------------------------------------------ |
+| Rule | Instruction                                                                      |
+| ---- | -------------------------------------------------------------------------------- |
 | 1.5  | Domain words are legal as technical nouns ("commit", "hook", "emoji", "config"). |
-| 1.7  | Do not use technical nouns as verbs.                                            |
-| 1.9  | When you pick a technical noun, pick a short and clear one.                     |
-| 1.10 | No regional words, slang, or jargon.                                            |
-| 1.11 | One item, one name. Do not write "config" here and "settings" there.            |
-| 1.12 | Domain verbs are legal as technical verbs ("commit", "deploy", "compile").      |
-| 1.13 | Do not use technical verbs as nouns.                                            |
-| 1.14 | Use American English spelling.                                                  |
+| 1.7  | Do not use technical nouns as verbs.                                             |
+| 1.9  | When you pick a technical noun, pick a short and clear one.                      |
+| 1.10 | No regional words, slang, or jargon.                                             |
+| 1.11 | One item, one name. Do not write "config" here and "settings" there.             |
+| 1.12 | Domain verbs are legal as technical verbs ("commit", "deploy", "compile").       |
+| 1.13 | Do not use technical verbs as nouns.                                             |
+| 1.14 | Use American English spelling.                                                   |
 
 **Before:** You can hook the event, then do a deploy.
 **After:** Add a hook for the event. Then deploy the service.
@@ -146,30 +146,30 @@ Rule 8.6 keeps long identifiers out of the sentence budget. `git commit --amend`
 
 If the word carries no fact, delete it. Do not replace it.
 
-| Slop                                           | Write instead                              |
-| ---------------------------------------------- | ------------------------------------------ |
-| leverage, utilize                              | use                                        |
-| in order to                                    | to                                         |
-| prior to                                       | before                                     |
-| ensure, verify, confirm, check (verb)          | make sure that                             |
-| it is worth noting that                        | (delete)                                   |
-| it is important to, crucially                  | (delete, state the fact)                   |
-| simply, just, easily, seamlessly, effortlessly | (delete)                                   |
-| robust, powerful, comprehensive, performant    | (delete, or give the measurable property)  |
-| functionality                                  | function, feature                          |
-| enables you to, allows you to                  | you can                                    |
-| is designed to, aims to                        | (delete, say what it does)                 |
-| dive into, delve into                          | read, examine                              |
-| when it comes to                               | for                                        |
-| in the event that                              | if                                         |
-| due to the fact that                           | because                                    |
-| and/or                                         | Pick one, or write "X, or Y, or both"      |
-| gracefully handles                             | (say what it does)                         |
-| out of the box                                 | by default                                 |
-| under the hood                                 | internally                                 |
-| blazingly fast, state-of-the-art               | fast (give the number), (delete)           |
-| plethora, myriad                               | many                                       |
-| addresses the issue, tackles                   | corrects the fault, removes the error      |
+| Slop                                           | Write instead                             |
+| ---------------------------------------------- | ----------------------------------------- |
+| leverage, utilize                              | use                                       |
+| in order to                                    | to                                        |
+| prior to                                       | before                                    |
+| ensure, verify, confirm, check (verb)          | make sure that                            |
+| it is worth noting that                        | (delete)                                  |
+| it is important to, crucially                  | (delete, state the fact)                  |
+| simply, just, easily, seamlessly, effortlessly | (delete)                                  |
+| robust, powerful, comprehensive, performant    | (delete, or give the measurable property) |
+| functionality                                  | function, feature                         |
+| enables you to, allows you to                  | you can                                   |
+| is designed to, aims to                        | (delete, say what it does)                |
+| dive into, delve into                          | read, examine                             |
+| when it comes to                               | for                                       |
+| in the event that                              | if                                        |
+| due to the fact that                           | because                                   |
+| and/or                                         | Pick one, or write "X, or Y, or both"     |
+| gracefully handles                             | (say what it does)                        |
+| out of the box                                 | by default                                |
+| under the hood                                 | internally                                |
+| blazingly fast, state-of-the-art               | fast (give the number), (delete)          |
+| plethora, myriad                               | many                                      |
+| addresses the issue, tackles                   | corrects the fault, removes the error     |
 
 ## Consistency
 

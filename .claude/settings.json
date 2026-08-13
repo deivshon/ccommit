@@ -1,6 +1,6 @@
 {
-    "env": {
-      "AGENTS": "true"
-    },
-    "outputStyle": "Simple English"
+  "env": {
+    "AGENTS": "true"
+  },
+  "outputStyle": "Simple English"
 }
