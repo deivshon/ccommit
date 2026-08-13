@@ -1,0 +1,9 @@
+{
+  "name": "ccommit",
+  "scripts": {
+    "fmt": "oxfmt"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.63.0"
+  }
+}
