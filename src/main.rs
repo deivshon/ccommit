@@ -72,6 +72,12 @@ fn run_direct(args: &Args, short_message: &str) {
     }
 
     let config = load_config(args);
+    if config.deny_cli_long_message && args.long_message.is_some() {
+        failure(
+            "The configuration denies `--long-message`. Set `deny_cli_long_message` to false to allow it",
+        );
+    }
+
     let commit_types = data::commit_types(config.commit_types.as_deref()).or_fail();
     let gitmojis = data::gitmojis(config.gitmojis.as_deref()).or_fail();
 

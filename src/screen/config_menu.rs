@@ -14,8 +14,8 @@ use crate::theme::{self, HexColor};
 use crate::ui::input::{self, Input};
 use crate::ui::{self, Flow, Screen};
 
-/// The fifteen keys the menu can write, in the order the rows appear.
-const ROWS: [Row; 15] = [
+/// The sixteen keys the menu can write, in the order the rows appear.
+const ROWS: [Row; 16] = [
     Row::Path(PathRow::CommitTypes),
     Row::Path(PathRow::Gitmojis),
     Row::Boolean(BoolRow::CommitOnFinish),
@@ -25,6 +25,7 @@ const ROWS: [Row; 15] = [
     Row::Boolean(BoolRow::GitmojiStep),
     Row::Boolean(BoolRow::LongDescriptionStep),
     Row::Boolean(BoolRow::BreakingChangeStep),
+    Row::Boolean(BoolRow::DenyCliLongMessage),
     Row::Limit,
     Row::Color(ColorRow::Accent),
     Row::Color(ColorRow::Muted),
@@ -64,6 +65,7 @@ enum BoolRow {
     GitmojiStep,
     LongDescriptionStep,
     BreakingChangeStep,
+    DenyCliLongMessage,
 }
 
 #[derive(Clone, Copy)]
@@ -139,6 +141,7 @@ impl BoolRow {
             BoolRow::GitmojiStep => config::KEY_GITMOJI_STEP,
             BoolRow::LongDescriptionStep => config::KEY_LONG_DESCRIPTION_STEP,
             BoolRow::BreakingChangeStep => config::KEY_BREAKING_CHANGE_STEP,
+            BoolRow::DenyCliLongMessage => config::KEY_DENY_CLI_LONG_MESSAGE,
         }
     }
 
@@ -151,6 +154,7 @@ impl BoolRow {
             BoolRow::GitmojiStep => config.gitmoji_step,
             BoolRow::LongDescriptionStep => config.long_description_step,
             BoolRow::BreakingChangeStep => config.breaking_change_step,
+            BoolRow::DenyCliLongMessage => config.deny_cli_long_message,
         }
     }
 
@@ -163,6 +167,7 @@ impl BoolRow {
             BoolRow::GitmojiStep => &mut config.gitmoji_step,
             BoolRow::LongDescriptionStep => &mut config.long_description_step,
             BoolRow::BreakingChangeStep => &mut config.breaking_change_step,
+            BoolRow::DenyCliLongMessage => &mut config.deny_cli_long_message,
         }
     }
 }

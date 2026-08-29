@@ -17,6 +17,7 @@ pub const DEFAULT_SCOPE_STEP: bool = true;
 pub const DEFAULT_GITMOJI_STEP: bool = true;
 pub const DEFAULT_LONG_DESCRIPTION_STEP: bool = true;
 pub const DEFAULT_BREAKING_CHANGE_STEP: bool = true;
+pub const DEFAULT_DENY_CLI_LONG_MESSAGE: bool = false;
 
 pub const KEY_COMMIT_TYPES: &str = "commit_types";
 pub const KEY_GITMOJIS: &str = "gitmojis";
@@ -27,6 +28,7 @@ pub const KEY_SCOPE_STEP: &str = "scope_step";
 pub const KEY_GITMOJI_STEP: &str = "gitmoji_step";
 pub const KEY_LONG_DESCRIPTION_STEP: &str = "long_description_step";
 pub const KEY_BREAKING_CHANGE_STEP: &str = "breaking_change_step";
+pub const KEY_DENY_CLI_LONG_MESSAGE: &str = "deny_cli_long_message";
 pub const KEY_ACCENT_COLOR: &str = "accent_color";
 pub const KEY_MUTED_COLOR: &str = "muted_color";
 pub const KEY_SUCCESS_COLOR: &str = "success_color";
@@ -48,6 +50,7 @@ pub struct Partial {
     pub gitmoji_step: Option<bool>,
     pub long_description_step: Option<bool>,
     pub breaking_change_step: Option<bool>,
+    pub deny_cli_long_message: Option<bool>,
     pub accent_color: Option<HexColor>,
     pub muted_color: Option<HexColor>,
     pub success_color: Option<HexColor>,
@@ -69,6 +72,7 @@ impl Partial {
             gitmoji_step: self.gitmoji_step.or(other.gitmoji_step),
             long_description_step: self.long_description_step.or(other.long_description_step),
             breaking_change_step: self.breaking_change_step.or(other.breaking_change_step),
+            deny_cli_long_message: self.deny_cli_long_message.or(other.deny_cli_long_message),
             accent_color: self.accent_color.or(other.accent_color),
             muted_color: self.muted_color.or(other.muted_color),
             success_color: self.success_color.or(other.success_color),
@@ -93,6 +97,7 @@ pub struct Config {
     pub gitmoji_step: bool,
     pub long_description_step: bool,
     pub breaking_change_step: bool,
+    pub deny_cli_long_message: bool,
     pub accent_color: Option<HexColor>,
     pub muted_color: Option<HexColor>,
     pub success_color: Option<HexColor>,
@@ -113,6 +118,7 @@ impl Default for Config {
             gitmoji_step: DEFAULT_GITMOJI_STEP,
             long_description_step: DEFAULT_LONG_DESCRIPTION_STEP,
             breaking_change_step: DEFAULT_BREAKING_CHANGE_STEP,
+            deny_cli_long_message: DEFAULT_DENY_CLI_LONG_MESSAGE,
             accent_color: None,
             muted_color: None,
             success_color: None,
@@ -161,6 +167,9 @@ pub fn merge(overrides: Partial, file: Partial) -> Config {
         breaking_change_step: merged
             .breaking_change_step
             .unwrap_or(DEFAULT_BREAKING_CHANGE_STEP),
+        deny_cli_long_message: merged
+            .deny_cli_long_message
+            .unwrap_or(DEFAULT_DENY_CLI_LONG_MESSAGE),
         accent_color: merged.accent_color,
         muted_color: merged.muted_color,
         success_color: merged.success_color,
@@ -244,6 +253,10 @@ fn literals(config: &Config) -> Vec<(&'static str, String)> {
             config.breaking_change_step.to_string(),
         ),
         (
+            KEY_DENY_CLI_LONG_MESSAGE,
+            config.deny_cli_long_message.to_string(),
+        ),
+        (
             KEY_SHORT_MESSAGE_LIMIT,
             limit_literal(config.short_message_limit),
         ),
@@ -303,6 +316,7 @@ mod tests {
         assert!(config.gitmoji_step);
         assert!(config.long_description_step);
         assert!(config.breaking_change_step);
+        assert!(!config.deny_cli_long_message);
         assert_eq!(config.commit_types, None);
         assert_eq!(config.gitmojis, None);
         assert_eq!(config.colors(), Colors::default());
@@ -650,6 +664,7 @@ mod tests {
             gitmoji_step: false,
             long_description_step: false,
             breaking_change_step: false,
+            deny_cli_long_message: true,
             short_message_limit: MessageLimit::characters(80).ok(),
             accent_color: Some(hex("#111111")),
             muted_color: Some(hex("#222222")),

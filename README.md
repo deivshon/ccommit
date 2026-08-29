@@ -20,7 +20,8 @@ first line:
 
 A valid message commits at once, and `--commit-on-finish=off` prints it instead. `--check-message`
 only validates the message and exits: code 0 for a valid message, code 1 with the reason for an
-invalid one.
+invalid one. With `deny_cli_long_message` on, the program refuses `-l` and exits with a failure, so
+a team can force short one-line messages in this mode.
 
 ```sh
 ccommit -s "feat(ui): ✨ add dark mode" -l "The palette follows the system setting."
@@ -31,11 +32,11 @@ ccommit -s "feat(ui): ✨ add dark mode" --check-message
 
 Every key holds a matching flag. The file lives at `~/.config/ccommit/config.json`, or under
 `XDG_CONFIG_HOME`. It can hold comments and trailing commas. Precedence is the command line, then
-the file, then the default. `ccommit -m` opens a menu over the fifteen keys and writes the file for
+the file, then the default. `ccommit -m` opens a menu over the sixteen keys and writes the file for
 you. The menu shows the values of the file alone. The flags change one run, so they stay out of the
 menu.
 
-Each change in the menu writes all fifteen keys, so the file stays complete. A key the file already
+Each change in the menu writes all sixteen keys, so the file stays complete. A key the file already
 holds keeps its place, and the comments around it survive. `null` stands for the default, so a key
 with `null` and an absent key mean the same. The program never reads the file as complete, and a key
 you erase by hand gives the default again.
@@ -60,6 +61,7 @@ step always appear.
 | `--gitmoji-step`            | `gitmoji_step`          | Show the gitmoji step                                    | `on`, `off`, `true`, `false` | on                              |
 | `--long-description-step`   | `long_description_step` | Show the long description step                           | `on`, `off`, `true`, `false` | on                              |
 | `--breaking-change-step`    | `breaking_change_step`  | Show the breaking change step                            | `on`, `off`, `true`, `false` | on                              |
+| `--deny-cli-long-message`   | `deny_cli_long_message` | Refuse the `--long-message` flag                         | `on`, `off`, `true`, `false` | off                             |
 | `--short-message-limit`     | `short_message_limit`   | Characters allowed on the first line                     | 50 or more, or `none`        | 72                              |
 | `--accent-color`            | `accent_color`          | Color of the titles, the prompts, and the cursor         | a hex color                  | bright blue                     |
 | `--muted-color`             | `muted_color`           | Color of the key help and the file path                  | a hex color                  | gray                            |

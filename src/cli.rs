@@ -76,6 +76,10 @@ pub struct Args {
     #[arg(long, value_name = "on|off", value_parser = BoolishValueParser::new(), hide_possible_values = true, overrides_with = "breaking_change_step")]
     breaking_change_step: Option<bool>,
 
+    /// Refuse the long message flag
+    #[arg(long, value_name = "on|off", value_parser = BoolishValueParser::new(), hide_possible_values = true, overrides_with = "deny_cli_long_message")]
+    deny_cli_long_message: Option<bool>,
+
     /// Characters allowed on the first line of the message
     #[arg(long, value_name = "50 or more|none")]
     short_message_limit: Option<MessageLimit>,
@@ -114,6 +118,7 @@ impl Args {
             gitmoji_step: self.gitmoji_step,
             long_description_step: self.long_description_step,
             breaking_change_step: self.breaking_change_step,
+            deny_cli_long_message: self.deny_cli_long_message,
             accent_color: self.accent_color,
             muted_color: self.muted_color,
             success_color: self.success_color,
@@ -148,6 +153,7 @@ mod tests {
         assert_eq!(overrides.gitmoji_step, None);
         assert_eq!(overrides.long_description_step, None);
         assert_eq!(overrides.breaking_change_step, None);
+        assert_eq!(overrides.deny_cli_long_message, None);
     }
 
     #[test]
@@ -185,6 +191,12 @@ mod tests {
             parse(&["--real-emoji=off"]).overrides().real_emoji,
             Some(false)
         );
+        assert_eq!(
+            parse(&["--deny-cli-long-message=off"])
+                .overrides()
+                .deny_cli_long_message,
+            Some(false)
+        );
     }
 
     #[test]
@@ -197,6 +209,12 @@ mod tests {
         );
         assert_eq!(
             parse(&["--real-emoji=on"]).overrides().real_emoji,
+            Some(true)
+        );
+        assert_eq!(
+            parse(&["--deny-cli-long-message=on"])
+                .overrides()
+                .deny_cli_long_message,
             Some(true)
         );
     }

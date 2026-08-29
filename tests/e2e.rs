@@ -527,7 +527,7 @@ fn the_config_menu_shows_the_file_and_not_the_command_line() {
 
 /// The command line says `off`, so a toggle over the flag value gives `true`.
 /// Every key the menu can write, in the order the file receives them.
-const KEYS: [&str; 15] = [
+const KEYS: [&str; 16] = [
     "commit_types",
     "gitmojis",
     "commit_on_finish",
@@ -537,6 +537,7 @@ const KEYS: [&str; 15] = [
     "gitmoji_step",
     "long_description_step",
     "breaking_change_step",
+    "deny_cli_long_message",
     "short_message_limit",
     "accent_color",
     "muted_color",
@@ -694,14 +695,14 @@ fn to_row(count: usize, rest: &[&'static [u8]]) -> Vec<&'static [u8]> {
     keys
 }
 
-/// Nine rows down reaches `short_message_limit`, and Enter opens the text input.
+/// Ten rows down reaches `short_message_limit`, and Enter opens the text input.
 fn limit_keys(rest: &[&'static [u8]]) -> Vec<&'static [u8]> {
-    to_row(9, rest)
+    to_row(10, rest)
 }
 
-/// Ten rows down reaches `accent_color`, and Enter opens the text input.
+/// Eleven rows down reaches `accent_color`, and Enter opens the text input.
 fn color_keys(rest: &[&'static [u8]]) -> Vec<&'static [u8]> {
-    to_row(10, rest)
+    to_row(11, rest)
 }
 
 #[test]
@@ -1513,6 +1514,88 @@ fn a_direct_commit_without_staged_changes_fails() {
         String::from_utf8_lossy(&output.stderr).trim(),
         "Failure: Can't commit without changes added"
     );
+}
+
+#[test]
+fn the_config_file_denies_the_long_message_flag() {
+    let repository = Repository::with_history("deny-long-cfg");
+    repository.write_config("{\n  \"deny_cli_long_message\": true\n}\n");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "-l", "the body"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("denies `--long-message`"), "{stderr}");
+    assert_eq!(repository.commit_count(), 1, "no commit was added");
+}
+
+#[test]
+fn the_deny_flag_stops_the_long_message() {
+    let repository = Repository::with_history("deny-long-cli");
+
+    let output = repository.run_bare(&[
+        "-s",
+        "feat: add thing",
+        "-l",
+        "the body",
+        "--deny-cli-long-message=on",
+    ]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("denies `--long-message`"), "{stderr}");
+    assert_eq!(repository.commit_count(), 1, "no commit was added");
+}
+
+#[test]
+fn the_deny_flag_beats_the_config_file() {
+    let repository = Repository::with_history("deny-long-override");
+    repository.write_config("{\n  \"deny_cli_long_message\": true\n}\n");
+
+    let output = repository.run_bare(&[
+        "-s",
+        "feat: add thing",
+        "-l",
+        "the body",
+        "--deny-cli-long-message=off",
+    ]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), "feat: add thing\n\nthe body");
+}
+
+#[test]
+fn the_deny_key_leaves_the_short_message_alone() {
+    let repository = Repository::with_history("deny-long-short-only");
+    repository.write_config("{\n  \"deny_cli_long_message\": true\n}\n");
+
+    let output = repository.run_bare(&["-s", "feat: add thing"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), "feat: add thing");
+}
+
+#[test]
+fn the_config_menu_writes_the_deny_key() {
+    let repository = Repository::clean("menu-deny");
+    let path = repository.config_home.join("ccommit/config.json");
+
+    // Nine rows down reaches `deny_cli_long_message`, and Enter toggles it.
+    let outcome = repository.run(&["-m"], &to_row(9, &[ESC]));
+
+    assert_eq!(outcome.code, 0, "{}", outcome.text);
+    let text = std::fs::read_to_string(&path).expect("the config file exists");
+    assert!(text.contains("\"deny_cli_long_message\": true"), "{text}");
 }
 
 #[test]
