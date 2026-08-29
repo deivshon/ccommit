@@ -1408,6 +1408,153 @@ fn the_short_description_stops_at_the_limit() {
 }
 
 #[test]
+fn a_short_message_flag_commits_without_the_wizard() {
+    let repository = Repository::with_history("direct-commit");
+
+    let output = repository.run_bare(&["-s", "feat(ui): ✨ add thing", "-l", "the body"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        repository.last_message(),
+        "feat(ui): ✨ add thing\n\nthe body"
+    );
+}
+
+#[test]
+fn a_long_message_of_several_lines_reaches_the_commit() {
+    let repository = Repository::with_history("direct-lines");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "-l", "first line\nsecond line"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        repository.last_message(),
+        "feat: add thing\n\nfirst line\nsecond line"
+    );
+}
+
+#[test]
+fn a_gitmoji_code_passes_the_direct_validation() {
+    let repository = Repository::with_history("direct-code");
+
+    let output = repository.run_bare(&["-s", "fix: :bug: squash it"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), "fix: :bug: squash it");
+}
+
+#[test]
+fn an_unknown_type_stops_the_direct_commit() {
+    let repository = Repository::with_history("direct-bad-type");
+
+    let output = repository.run_bare(&["-s", "wip: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("not one of the commit types"), "{stderr}");
+    assert_eq!(repository.commit_count(), 1, "no commit was added");
+}
+
+#[test]
+fn a_first_line_over_the_limit_stops_the_direct_commit() {
+    let repository = Repository::with_history("direct-limit");
+    let long_line = format!("feat: {}", "x".repeat(80));
+
+    let output = repository.run_bare(&["-s", &long_line]);
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("over the limit of 72"), "{stderr}");
+
+    let output = repository.run_bare(&["-s", &long_line, "--short-message-limit=none"]);
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), long_line);
+}
+
+#[test]
+fn the_direct_path_prints_when_the_commit_is_off() {
+    let repository = Repository::with_history("direct-print");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "--commit-on-finish=off"]);
+
+    assert_eq!(output.status.code(), Some(0));
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("feat: add thing"), "{stdout}");
+    assert_eq!(repository.commit_count(), 1, "no commit was added");
+}
+
+#[test]
+fn a_direct_commit_without_staged_changes_fails() {
+    let repository = Repository::clean("direct-clean");
+
+    let output = repository.run_bare(&["-s", "feat: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr).trim(),
+        "Failure: Can't commit without changes added"
+    );
+}
+
+#[test]
+fn the_check_leaves_the_repository_alone() {
+    let repository = Repository::with_history("check");
+
+    let output = repository.run_bare(&["-s", "feat: ✨ add thing", "--check-message"]);
+
+    assert_eq!(output.status.code(), Some(0));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout).trim(),
+        "The message is valid"
+    );
+    assert_eq!(repository.commit_count(), 1, "no commit was added");
+}
+
+#[test]
+fn the_check_needs_no_repository() {
+    let repository = Repository::bare("check-nogit");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "--check-message"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn the_check_fails_on_an_invalid_message() {
+    let repository = Repository::bare("check-bad");
+
+    let output = repository.run_bare(&["-s", "feat:no space", "--check-message"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("No space follows"), "{stderr}");
+}
+
+#[test]
 fn the_working_directory_flag_picks_the_repository() {
     let target = Repository::with_history("target");
     let elsewhere = Repository::with_history("elsewhere");

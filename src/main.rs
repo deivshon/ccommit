@@ -2,9 +2,10 @@ use clap::Parser;
 
 use ccommit::cli::Args;
 use ccommit::config::{self, Partial};
+use ccommit::message::ConventionalCommit;
 use ccommit::screen::config_menu::ConfigMenu;
 use ccommit::screen::wizard::Wizard;
-use ccommit::{data, git, ui};
+use ccommit::{data, git, ui, validate};
 
 fn failure(message: &str) -> ! {
     eprintln!("Failure: {message}");
@@ -27,6 +28,8 @@ fn main() {
     // The configuration menu needs no repository, so it skips the three startup checks.
     if args.config_menu {
         run_config_menu(&args);
+    } else if let Some(short_message) = args.short_message.clone() {
+        run_direct(&args, &short_message);
     } else {
         run_wizard(&args);
     }
@@ -43,7 +46,8 @@ fn run_config_menu(args: &Args) {
     ui::run(&mut menu).or_fail();
 }
 
-fn run_wizard(args: &Args) {
+/// The three startup checks every commit shares.
+fn require_repository(args: &Args) {
     let working_directory = &args.working_directory;
     if !working_directory.is_dir() {
         failure(&format!(
@@ -58,6 +62,44 @@ fn run_wizard(args: &Args) {
     if !git::has_staged_changes(working_directory) {
         failure("Can't commit without changes added");
     }
+}
+
+/// Builds the commit from the flags, without the wizard.
+fn run_direct(args: &Args, short_message: &str) {
+    // The check only validates, so it needs no repository.
+    if !args.check_message {
+        require_repository(args);
+    }
+
+    let config = load_config(args);
+    let commit_types = data::commit_types(config.commit_types.as_deref()).or_fail();
+    let gitmojis = data::gitmojis(config.gitmojis.as_deref()).or_fail();
+
+    validate::validate(
+        short_message,
+        &commit_types,
+        &gitmojis,
+        config.message_limit(),
+    )
+    .or_fail();
+
+    let message = ConventionalCommit {
+        short_message: short_message.to_string(),
+        long_message: args.long_message.clone().unwrap_or_default(),
+    };
+
+    if args.check_message {
+        println!("The message is valid");
+    } else if config.commit_on_finish {
+        git::commit(&args.working_directory, &message).or_fail();
+    } else {
+        println!("{}", message.text());
+    }
+}
+
+fn run_wizard(args: &Args) {
+    require_repository(args);
+    let working_directory = &args.working_directory;
 
     let config = load_config(args);
 

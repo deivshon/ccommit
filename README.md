@@ -6,6 +6,27 @@ Conventional commits from the terminal.
 and calls `git commit`. The commit types and the gitmojis are compiled into the binary, so the
 program needs no data directory and no configuration file.
 
+## Message from the command line
+
+`-s` takes the first line from the command line and skips the wizard. `-l` adds the body under one
+empty line, as `git commit -m -m` does. The program makes sure that the wizard can produce the same
+first line:
+
+- The type must be one of the commit types.
+- The scope is optional and sits between `(` and `)`.
+- The gitmoji is optional, as the code or as the emoji, and it must be one of the gitmojis.
+- The short description must not be empty.
+- The first line must stay inside `short_message_limit`.
+
+A valid message commits at once, and `--commit-on-finish=off` prints it instead. `--check-message`
+only validates the message and exits: code 0 for a valid message, code 1 with the reason for an
+invalid one.
+
+```sh
+ccommit -s "feat(ui): ✨ add dark mode" -l "The palette follows the system setting."
+ccommit -s "feat(ui): ✨ add dark mode" --check-message
+```
+
 ## Configuration
 
 Every key holds a matching flag. The file lives at `~/.config/ccommit/config.json`, or under
@@ -27,6 +48,9 @@ step always appear.
 | `-C`, `--working-directory` |                         | Set the working directory                                | a path                       | `.`                             |
 | `-m`, `--config-menu`       |                         | Open the configuration menu and exit                     | none                         | off                             |
 | `--config`                  |                         | Path to the configuration file                           | a path                       | `~/.config/ccommit/config.json` |
+| `-s`, `--short-message`     |                         | Commit with this first line and skip the wizard          | text                         |                                 |
+| `-l`, `--long-message`      |                         | Put this text in the body, under one empty line          | text                         |                                 |
+| `--check-message`           |                         | Validate the short message and exit without a commit     | none                         | off                             |
 | `--commit-types`            | `commit_types`          | Path to a JSON file with the commit types                | a path                       | embedded                        |
 | `--gitmojis`                | `gitmojis`              | Path to a JSON file with the gitmojis                    | a path                       | embedded                        |
 | `--commit-on-finish`        | `commit_on_finish`      | Commit when the wizard ends                              | `on`, `off`, `true`, `false` | on                              |

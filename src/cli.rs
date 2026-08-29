@@ -36,6 +36,18 @@ pub struct Args {
     #[arg(long)]
     pub gitmojis: Option<PathBuf>,
 
+    /// Commit with this first line and skip the wizard
+    #[arg(short = 's', long, value_name = "TEXT", conflicts_with = "config_menu")]
+    pub short_message: Option<String>,
+
+    /// Put this text in the body, under one empty line
+    #[arg(short = 'l', long, value_name = "TEXT", requires = "short_message")]
+    pub long_message: Option<String>,
+
+    /// Validate the short message and exit without a commit
+    #[arg(long, requires = "short_message")]
+    pub check_message: bool,
+
     /// Commit when the wizard ends
     #[arg(long, value_name = "on|off", value_parser = BoolishValueParser::new(), hide_possible_values = true, overrides_with = "commit_on_finish")]
     commit_on_finish: Option<bool>,
@@ -299,6 +311,44 @@ mod tests {
         assert!(error.to_string().contains("not a hex color"), "{error}");
 
         assert!(Args::try_parse_from(["ccommit", "--accent-color"]).is_err());
+    }
+
+    #[test]
+    fn the_direct_flags_stay_silent_by_default() {
+        let args = parse(&[]);
+        assert_eq!(args.short_message, None);
+        assert_eq!(args.long_message, None);
+        assert!(!args.check_message);
+    }
+
+    #[test]
+    fn the_direct_flags_parse_in_both_forms() {
+        let args = parse(&[
+            "--short-message",
+            "feat: add thing",
+            "--long-message",
+            "the body",
+            "--check-message",
+        ]);
+        assert_eq!(args.short_message.as_deref(), Some("feat: add thing"));
+        assert_eq!(args.long_message.as_deref(), Some("the body"));
+        assert!(args.check_message);
+
+        let args = parse(&["-s", "feat: add thing", "-l", "first\nsecond"]);
+        assert_eq!(args.short_message.as_deref(), Some("feat: add thing"));
+        assert_eq!(args.long_message.as_deref(), Some("first\nsecond"));
+        assert!(!args.check_message);
+    }
+
+    #[test]
+    fn the_long_message_and_the_check_need_the_short_message() {
+        assert!(Args::try_parse_from(["ccommit", "--long-message", "the body"]).is_err());
+        assert!(Args::try_parse_from(["ccommit", "--check-message"]).is_err());
+    }
+
+    #[test]
+    fn the_short_message_refuses_the_config_menu() {
+        assert!(Args::try_parse_from(["ccommit", "-m", "-s", "feat: add thing"]).is_err());
     }
 
     #[test]

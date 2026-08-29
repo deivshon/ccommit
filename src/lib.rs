@@ -8,3 +8,4 @@ pub mod scope;
 pub mod screen;
 pub mod theme;
 pub mod ui;
+pub mod validate;
