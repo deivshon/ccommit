@@ -9,6 +9,11 @@ pub fn is_repository(path: &Path) -> bool {
     run_quiet(path, &["rev-parse", "--is-inside-work-tree"]).is_some_and(|status| status.success())
 }
 
+/// `git commit --amend` needs a commit to replace, so the amend path asks for this first.
+pub fn head_exists(path: &Path) -> bool {
+    run_quiet(path, &["rev-parse", "--verify", "HEAD"]).is_some_and(|status| status.success())
+}
+
 pub fn has_staged_changes(path: &Path) -> bool {
     if head_exists(path) {
         // git exits 1 when the index differs from HEAD.
@@ -45,14 +50,15 @@ pub fn missing_identity(path: &Path) -> Option<MissingIdentity> {
     }
 }
 
-pub fn commit(path: &Path, message: &ConventionalCommit) -> Result<(), String> {
+pub fn commit(path: &Path, message: &ConventionalCommit, amend: bool) -> Result<(), String> {
     let mut command = Command::new("git");
-    command
-        .arg("-C")
-        .arg(path)
-        .arg("commit")
-        .arg("-m")
-        .arg(&message.short_message);
+    command.arg("-C").arg(path).arg("commit");
+
+    if amend {
+        command.arg("--amend");
+    }
+
+    command.arg("-m").arg(&message.short_message);
 
     if !message.long_message.is_empty() {
         command.arg("-m").arg(&message.long_message);
@@ -81,10 +87,6 @@ fn has_setting(path: &Path, key: &str) -> bool {
         .stderr(Stdio::null())
         .output()
         .is_ok_and(|output| output.status.success() && !output.stdout.trim_ascii().is_empty())
-}
-
-fn head_exists(path: &Path) -> bool {
-    run_quiet(path, &["rev-parse", "--verify", "HEAD"]).is_some_and(|status| status.success())
 }
 
 fn index_is_not_empty(path: &Path) -> bool {

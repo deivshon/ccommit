@@ -85,6 +85,7 @@ pub struct Wizard {
     scope: String,
     gitmoji: String,
     error: Option<String>,
+    amend: bool,
 }
 
 impl Wizard {
@@ -121,10 +122,17 @@ impl Wizard {
             scope: String::new(),
             gitmoji: String::new(),
             error: None,
+            amend: false,
         };
 
         wizard.update_limit();
         wizard
+    }
+
+    /// The preview names the amend, because that commit replaces the last one.
+    pub fn with_amend(mut self, amend: bool) -> Self {
+        self.amend = amend;
+        self
     }
 
     pub fn message(&self) -> ConventionalCommit {
@@ -351,13 +359,11 @@ impl Wizard {
             Step::Gitmoji => "↑↓ move · type to filter · ↵ select · Esc back",
             Step::ShortDesc => "↵ submit · Esc back",
             Step::LongDesc | Step::Breaking => "↵ submit · Shift+↵ or Option+↵ new line · Esc back",
-            Step::Preview => {
-                if self.config.commit_on_finish {
-                    "↵ commit · Esc back"
-                } else {
-                    "↵ print the message · Esc back"
-                }
-            }
+            Step::Preview => match (self.config.commit_on_finish, self.amend) {
+                (true, true) => "↵ amend · Esc back",
+                (true, false) => "↵ commit · Esc back",
+                (false, _) => "↵ print the message · Esc back",
+            },
         }
     }
 }

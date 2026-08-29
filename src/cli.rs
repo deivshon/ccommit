@@ -48,6 +48,10 @@ pub struct Args {
     #[arg(long, requires = "short_message")]
     pub check_message: bool,
 
+    /// Replace the last commit instead of adding one
+    #[arg(long, conflicts_with_all = ["config_menu", "check_message"])]
+    pub amend: bool,
+
     /// Commit when the wizard ends
     #[arg(long, value_name = "on|off", value_parser = BoolishValueParser::new(), hide_possible_values = true, overrides_with = "commit_on_finish")]
     commit_on_finish: Option<bool>,
@@ -337,6 +341,28 @@ mod tests {
         assert_eq!(args.short_message, None);
         assert_eq!(args.long_message, None);
         assert!(!args.check_message);
+        assert!(!args.amend);
+    }
+
+    #[test]
+    fn the_amend_flag_needs_no_value_and_no_other_flag() {
+        assert!(parse(&["--amend"]).amend);
+        assert!(parse(&["--amend", "-s", "feat: add thing"]).amend);
+    }
+
+    #[test]
+    fn the_amend_flag_refuses_the_menu_and_the_check() {
+        assert!(Args::try_parse_from(["ccommit", "-m", "--amend"]).is_err());
+        assert!(
+            Args::try_parse_from([
+                "ccommit",
+                "-s",
+                "feat: add thing",
+                "--check-message",
+                "--amend"
+            ])
+            .is_err()
+        );
     }
 
     #[test]

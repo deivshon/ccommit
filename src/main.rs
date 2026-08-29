@@ -60,8 +60,21 @@ fn require_repository(args: &Args) {
     if !git::is_repository(working_directory) {
         failure("Can't commit outside of a git repository");
     }
-    if !git::has_staged_changes(working_directory) {
+
+    // The amend keeps the tree of the last commit, so it asks for that commit instead.
+    if args.amend {
+        if !git::head_exists(working_directory) {
+            failure("Can't amend without a commit");
+        }
+    } else if !git::has_staged_changes(working_directory) {
         failure("Can't commit without changes added");
+    }
+}
+
+/// The amend runs through `git commit`, so a run that only prints the message cannot do it.
+fn require_commit_for_amend(args: &Args, config: &config::Config) {
+    if args.amend && !config.commit_on_finish {
+        failure("`--amend` needs the commit. Set `commit_on_finish` to true to allow it");
     }
 }
 
@@ -98,6 +111,7 @@ fn run_direct(args: &Args, short_message: &str) {
         );
     }
 
+    require_commit_for_amend(args, &config);
     if !args.check_message && config.commit_on_finish {
         require_identity(args);
     }
@@ -121,7 +135,7 @@ fn run_direct(args: &Args, short_message: &str) {
     if args.check_message {
         println!("The message is valid");
     } else if config.commit_on_finish {
-        git::commit(&args.working_directory, &message).or_fail();
+        git::commit(&args.working_directory, &message, args.amend).or_fail();
     } else {
         println!("{}", message.text());
     }
@@ -132,6 +146,7 @@ fn run_wizard(args: &Args) {
     let working_directory = &args.working_directory;
 
     let config = load_config(args);
+    require_commit_for_amend(args, &config);
     if config.commit_on_finish {
         require_identity(args);
     }
@@ -146,7 +161,8 @@ fn run_wizard(args: &Args) {
     }
 
     let commit_on_finish = config.commit_on_finish;
-    let mut wizard = Wizard::new(config, working_directory.clone(), commit_types, gitmojis);
+    let mut wizard = Wizard::new(config, working_directory.clone(), commit_types, gitmojis)
+        .with_amend(args.amend);
 
     // The terminal is already restored here, so output reaches the real screen.
     let Some(message) = ui::run(&mut wizard).or_fail() else {
@@ -154,7 +170,7 @@ fn run_wizard(args: &Args) {
     };
 
     if commit_on_finish {
-        git::commit(working_directory, &message).or_fail();
+        git::commit(working_directory, &message, args.amend).or_fail();
     } else {
         println!("{}", message.text());
     }

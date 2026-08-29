@@ -52,6 +52,7 @@ step always appear.
 | `-s`, `--short-message`     |                         | Commit with this first line and skip the wizard          | text                         |                                 |
 | `-l`, `--long-message`      |                         | Put this text in the body, under one empty line          | text                         |                                 |
 | `--check-message`           |                         | Validate the short message and exit without a commit     | none                         | off                             |
+| `--amend`                   |                         | Replace the last commit instead of a new one             | none                         | off                             |
 | `--commit-types`            | `commit_types`          | Path to a JSON file with the commit types                | a path                       | embedded                        |
 | `--gitmojis`                | `gitmojis`              | Path to a JSON file with the gitmojis                    | a path                       | embedded                        |
 | `--commit-on-finish`        | `commit_on_finish`      | Commit when the wizard ends                              | `on`, `off`, `true`, `false` | on                              |

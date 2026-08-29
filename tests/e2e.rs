@@ -128,6 +128,14 @@ impl Repository {
         }
     }
 
+    /// The files the commit at HEAD holds.
+    fn files_in_head(&self) -> Vec<String> {
+        self.git(&["ls-tree", "-r", "--name-only", "HEAD"])
+            .lines()
+            .map(str::to_string)
+            .collect()
+    }
+
     fn add_failing_pre_commit_hook(&self) {
         self.add_hook("pre-commit", "#!/bin/sh\necho hook says no >&2\nexit 1\n");
     }
@@ -1720,6 +1728,119 @@ fn the_check_fails_on_an_invalid_message() {
     assert_eq!(output.status.code(), Some(1));
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("No space follows"), "{stderr}");
+}
+
+/// The amend needs no staged change, so a repository with a clean tree still reaches the wizard.
+#[test]
+fn the_wizard_amends_the_last_commit() {
+    let repository = Repository::clean("amend-wizard");
+
+    let mut keys = wizard_keys();
+    keys.extend([ENTER, ENTER, ENTER]);
+    let outcome = repository.run(&["--amend"], &keys);
+
+    assert_eq!(outcome.code, 0, "{}", outcome.text);
+    assert_eq!(repository.last_message(), "feat: ✨ add thing");
+    assert_eq!(repository.commit_count(), 1, "{}", outcome.text);
+}
+
+#[test]
+fn the_preview_footer_names_the_amend() {
+    let repository = Repository::with_history("amend-footer");
+
+    // Ctrl+C on the preview leaves the last commit alone.
+    let mut keys = wizard_keys();
+    keys.extend([ENTER, ENTER, CTRL_C]);
+    let outcome = repository.run(&["--amend"], &keys);
+
+    assert_eq!(outcome.code, 0, "{}", outcome.text);
+    assert!(outcome.text.contains("↵ amend"), "{}", outcome.text);
+    assert_eq!(repository.last_message(), "chore: first");
+}
+
+/// The staged file joins the commit that the amend replaces.
+#[test]
+fn a_direct_amend_replaces_the_last_commit() {
+    let repository = Repository::with_history("amend-direct");
+
+    let output = repository.run_bare(&["--amend", "-s", "feat: ✨ add thing", "-l", "the body"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), "feat: ✨ add thing\n\nthe body");
+    assert_eq!(repository.commit_count(), 1);
+    assert_eq!(repository.files_in_head(), ["one.txt", "readme.txt"]);
+}
+
+#[test]
+fn an_amend_with_nothing_staged_changes_the_message_alone() {
+    let repository = Repository::clean("amend-message-only");
+
+    let output = repository.run_bare(&["--amend", "-s", "fix: 🐛 squash it"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(repository.last_message(), "fix: 🐛 squash it");
+    assert_eq!(repository.commit_count(), 1);
+    assert_eq!(repository.files_in_head(), ["readme.txt"]);
+}
+
+#[test]
+fn an_amend_in_a_repository_without_a_commit_fails() {
+    let repository = Repository::unborn("amend-unborn");
+
+    let output = repository.run_bare(&["--amend", "-s", "feat: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr).trim(),
+        "Failure: Can't amend without a commit"
+    );
+    assert_eq!(repository.commit_count(), 0);
+}
+
+#[test]
+fn an_amend_with_the_commit_off_fails() {
+    let repository = Repository::with_history("amend-print");
+
+    let output =
+        repository.run_bare(&["--amend", "-s", "feat: add thing", "--commit-on-finish=off"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("`--amend` needs the commit"), "{stderr}");
+    assert_eq!(repository.last_message(), "chore: first");
+}
+
+#[test]
+fn an_amend_with_the_check_fails_before_the_run() {
+    let repository = Repository::with_history("amend-check");
+
+    let output = repository.run_bare(&["--amend", "-s", "feat: add thing", "--check-message"]);
+
+    assert_eq!(output.status.code(), Some(2));
+    assert_eq!(repository.last_message(), "chore: first");
+}
+
+#[test]
+fn a_failing_pre_commit_hook_stops_the_amend() {
+    let repository = Repository::with_history("amend-hook");
+    repository.add_failing_pre_commit_hook();
+
+    let output = repository.run_bare(&["--amend", "-s", "feat: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("hook says no"), "{stderr}");
+    assert_eq!(repository.last_message(), "chore: first");
 }
 
 #[test]
