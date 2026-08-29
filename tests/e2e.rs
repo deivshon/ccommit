@@ -60,6 +60,17 @@ impl Repository {
         repository
     }
 
+    /// One staged file, and no identity for `git commit`.
+    fn without_identity(name: &str) -> Self {
+        let repository = Self::bare(name);
+        repository.git(&["init", "--quiet"]);
+        repository.git(&["config", "commit.gpgsign", "false"]);
+        // Without this key, git guesses a name and an email from the system.
+        repository.git(&["config", "user.useConfigOnly", "true"]);
+        repository.stage("one.txt", "one\n");
+        repository
+    }
+
     /// One commit and nothing staged.
     fn clean(name: &str) -> Self {
         let repository = Self::empty(name);
@@ -431,6 +442,80 @@ fn a_repository_with_no_staged_changes_fails() {
     assert_eq!(
         String::from_utf8_lossy(&output.stderr).trim(),
         "Failure: Can't commit without changes added"
+    );
+}
+
+#[test]
+fn a_repository_without_an_identity_fails_before_the_wizard() {
+    let repository = Repository::without_identity("identity");
+
+    let output = repository.run_bare(&[]);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr).trim(),
+        "Failure: Can't commit without a git identity. Set it with:\n  \
+         git config user.name \"Your Name\"\n  \
+         git config user.email \"you@example.com\""
+    );
+    assert_eq!(repository.commit_count(), 0);
+}
+
+#[test]
+fn a_direct_commit_without_an_identity_fails() {
+    let repository = Repository::without_identity("identity-direct");
+
+    let output = repository.run_bare(&["-s", "feat: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("without a git identity"), "{stderr}");
+    assert_eq!(repository.commit_count(), 0);
+}
+
+/// The name is there, so only the email reaches the message.
+#[test]
+fn a_missing_email_names_the_email_alone() {
+    let repository = Repository::without_identity("identity-email");
+    repository.git(&["config", "user.name", "ccommit test"]);
+
+    let output = repository.run_bare(&["-s", "feat: add thing"]);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr).trim(),
+        "Failure: Can't commit without a git identity. Set it with:\n  \
+         git config user.email \"you@example.com\""
+    );
+}
+
+#[test]
+fn a_print_without_a_commit_needs_no_identity() {
+    let repository = Repository::without_identity("identity-print");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "--commit-on-finish=off"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("feat: add thing"), "{stdout}");
+}
+
+#[test]
+fn the_check_needs_no_identity() {
+    let repository = Repository::without_identity("identity-check");
+
+    let output = repository.run_bare(&["-s", "feat: add thing", "--check-message"]);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
     );
 }
 

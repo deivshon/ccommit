@@ -2,6 +2,7 @@ use clap::Parser;
 
 use ccommit::cli::Args;
 use ccommit::config::{self, Partial};
+use ccommit::git::MissingIdentity;
 use ccommit::message::ConventionalCommit;
 use ccommit::screen::config_menu::ConfigMenu;
 use ccommit::screen::wizard::Wizard;
@@ -64,6 +65,25 @@ fn require_repository(args: &Args) {
     }
 }
 
+/// Runs before the wizard, because `git commit` refuses an unknown identity.
+fn require_identity(args: &Args) {
+    let Some(missing) = git::missing_identity(&args.working_directory) else {
+        return;
+    };
+
+    let name = "  git config user.name \"Your Name\"";
+    let email = "  git config user.email \"you@example.com\"";
+    let hint = match missing {
+        MissingIdentity::Name => name.to_string(),
+        MissingIdentity::Email => email.to_string(),
+        MissingIdentity::Both => format!("{name}\n{email}"),
+    };
+
+    failure(&format!(
+        "Can't commit without a git identity. Set it with:\n{hint}"
+    ));
+}
+
 /// Builds the commit from the flags, without the wizard.
 fn run_direct(args: &Args, short_message: &str) {
     // The check only validates, so it needs no repository.
@@ -76,6 +96,10 @@ fn run_direct(args: &Args, short_message: &str) {
         failure(
             "The configuration denies `--long-message`. Set `deny_cli_long_message` to false to allow it",
         );
+    }
+
+    if !args.check_message && config.commit_on_finish {
+        require_identity(args);
     }
 
     let commit_types = data::commit_types(config.commit_types.as_deref()).or_fail();
@@ -108,6 +132,9 @@ fn run_wizard(args: &Args) {
     let working_directory = &args.working_directory;
 
     let config = load_config(args);
+    if config.commit_on_finish {
+        require_identity(args);
+    }
 
     let commit_types = data::commit_types(config.commit_types.as_deref()).or_fail();
     let gitmojis = data::gitmojis(config.gitmojis.as_deref()).or_fail();

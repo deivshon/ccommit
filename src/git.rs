@@ -20,6 +20,31 @@ pub fn has_staged_changes(path: &Path) -> bool {
     }
 }
 
+/// The part of the git identity that `git commit` cannot find.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MissingIdentity {
+    Name,
+    Email,
+    Both,
+}
+
+/// `git var` builds the identity that `git commit` needs, so it fails for the same reasons.
+pub fn missing_identity(path: &Path) -> Option<MissingIdentity> {
+    if identity_is_known(path, "GIT_AUTHOR_IDENT") && identity_is_known(path, "GIT_COMMITTER_IDENT")
+    {
+        return None;
+    }
+
+    match (
+        has_setting(path, "user.name"),
+        has_setting(path, "user.email"),
+    ) {
+        (false, true) => Some(MissingIdentity::Name),
+        (true, false) => Some(MissingIdentity::Email),
+        _ => Some(MissingIdentity::Both),
+    }
+}
+
 pub fn commit(path: &Path, message: &ConventionalCommit) -> Result<(), String> {
     let mut command = Command::new("git");
     command
@@ -42,6 +67,20 @@ pub fn commit(path: &Path, message: &ConventionalCommit) -> Result<(), String> {
     } else {
         Err(format!("git commit failed with {}", describe(status)))
     }
+}
+
+fn identity_is_known(path: &Path, variable: &str) -> bool {
+    run_quiet(path, &["var", variable]).is_some_and(|status| status.success())
+}
+
+fn has_setting(path: &Path, key: &str) -> bool {
+    Command::new("git")
+        .arg("-C")
+        .arg(path)
+        .args(["config", "--get", key])
+        .stderr(Stdio::null())
+        .output()
+        .is_ok_and(|output| output.status.success() && !output.stdout.trim_ascii().is_empty())
 }
 
 fn head_exists(path: &Path) -> bool {
