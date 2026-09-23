@@ -1,12 +1,27 @@
 //! Spawns `git`, so that hooks and `commit.gpgsign` keep working.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus, Stdio};
 
 use crate::message::ConventionalCommit;
 
 pub fn is_repository(path: &Path) -> bool {
     run_quiet(path, &["rev-parse", "--is-inside-work-tree"]).is_some_and(|status| status.success())
+}
+
+/// The top directory of the work tree, so that a monorepo package finds the shared files.
+pub fn repository_root(path: &Path) -> Option<PathBuf> {
+    let output = Command::new("git")
+        .arg("-C")
+        .arg(path)
+        .args(["rev-parse", "--show-toplevel"])
+        .stderr(Stdio::null())
+        .output()
+        .ok()?;
+
+    let root = String::from_utf8(output.stdout).ok()?;
+    let root = root.trim_end_matches(['\n', '\r']);
+    (output.status.success() && !root.is_empty()).then(|| PathBuf::from(root))
 }
 
 /// `git commit --amend` needs a commit to replace, so the amend path asks for this first.

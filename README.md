@@ -6,6 +6,9 @@ Conventional commits from the terminal.
 and calls `git commit`. The commit types and the gitmojis are compiled into the binary, so the
 program needs no data directory and no configuration file.
 
+The scope menu reads `conventionalCommits.scopes` from `.vscode/settings.json` at the repository
+root.
+
 ## Message from the command line
 
 `-s` takes the first line from the command line and skips the wizard. `-l` adds the body under one

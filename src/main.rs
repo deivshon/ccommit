@@ -160,9 +160,11 @@ fn run_wizard(args: &Args) {
         failure("No entries available for the gitmoji menu");
     }
 
+    let repository_root =
+        git::repository_root(working_directory).unwrap_or_else(|| working_directory.clone());
     let commit_on_finish = config.commit_on_finish;
-    let mut wizard = Wizard::new(config, working_directory.clone(), commit_types, gitmojis)
-        .with_amend(args.amend);
+    let mut wizard =
+        Wizard::new(config, repository_root, commit_types, gitmojis).with_amend(args.amend);
 
     // The terminal is already restored here, so output reaches the real screen.
     let Some(message) = ui::run(&mut wizard).or_fail() else {

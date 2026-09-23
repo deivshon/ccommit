@@ -68,7 +68,7 @@ pub struct Wizard {
     config: Config,
     colors: Colors,
     limit: MessageLimit,
-    working_directory: PathBuf,
+    repository_root: PathBuf,
     steps: Vec<Step>,
     position: usize,
     commit_types: Vec<Entry>,
@@ -91,13 +91,13 @@ pub struct Wizard {
 impl Wizard {
     pub fn new(
         config: Config,
-        working_directory: PathBuf,
+        repository_root: PathBuf,
         commit_types: Vec<Entry>,
         gitmojis: Vec<Entry>,
     ) -> Self {
         let type_entries = commit_types.iter().map(Entry::menu_entry).collect();
         let gitmoji_entries = gitmojis.iter().map(Entry::menu_entry_with_emoji).collect();
-        let scope_entries = scope::menu_entries(&working_directory);
+        let scope_entries = scope::menu_entries(&repository_root);
         let colors = config.colors();
         let limit = config.message_limit();
 
@@ -106,7 +106,7 @@ impl Wizard {
             config,
             colors,
             limit,
-            working_directory,
+            repository_root,
             position: 0,
             commit_types,
             gitmojis,
@@ -295,12 +295,12 @@ impl Wizard {
                 let scope = self.new_scope_input.text();
 
                 if add {
-                    if let Err(error) = scope::add_scope(&self.working_directory, &scope) {
+                    if let Err(error) = scope::add_scope(&self.repository_root, &scope) {
                         self.error = Some(error);
                         return Flow::Continue;
                     }
                     self.scope_select
-                        .set_entries(scope::menu_entries(&self.working_directory));
+                        .set_entries(scope::menu_entries(&self.repository_root));
                 }
 
                 self.set_scope(scope);

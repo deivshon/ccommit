@@ -184,6 +184,21 @@ impl Repository {
 
     /// The same, with the process directory somewhere else than the target repository.
     fn run_from(&self, current: &Path, arguments: &[&str], keys: &[&[u8]]) -> Outcome {
+        self.spawn(&self.path, current, arguments, keys)
+    }
+
+    /// The same, with `-C` and the process directory both on a directory inside the repository.
+    fn run_in(&self, directory: &Path, arguments: &[&str], keys: &[&[u8]]) -> Outcome {
+        self.spawn(directory, directory, arguments, keys)
+    }
+
+    fn spawn(
+        &self,
+        working_directory: &Path,
+        current: &Path,
+        arguments: &[&str],
+        keys: &[&[u8]],
+    ) -> Outcome {
         let pty = native_pty_system();
         let pair = pty
             .openpty(PtySize {
@@ -196,7 +211,7 @@ impl Repository {
 
         let mut command = CommandBuilder::new(BINARY);
         command.arg("-C");
-        command.arg(&self.path);
+        command.arg(working_directory);
         for argument in arguments {
             command.arg(argument);
         }
@@ -1856,4 +1871,36 @@ fn the_working_directory_flag_picks_the_repository() {
     assert_eq!(outcome.code, 0, "{}", outcome.text);
     assert_eq!(target.last_message(), "feat: ✨ add thing");
     assert_eq!(elsewhere.last_message(), "chore: first");
+}
+
+#[test]
+fn a_subdirectory_reads_the_scopes_at_the_repository_root() {
+    let repository = Repository::with_history("subdirectory");
+    repository.write(
+        ".vscode/settings.json",
+        "{\n  \"conventionalCommits.scopes\": [\"api\"]\n}\n",
+    );
+    let package = repository
+        .write("packages/web/index.txt", "web\n")
+        .parent()
+        .expect("a parent")
+        .to_path_buf();
+
+    // The first scope row is `api`, so Enter picks it.
+    let keys: Vec<&[u8]> = vec![
+        b"feat",
+        ENTER,
+        ENTER,
+        b":sparkles:",
+        ENTER,
+        b"add thing",
+        ENTER,
+        ENTER,
+        ENTER,
+        ENTER,
+    ];
+    let outcome = repository.run_in(&package, &[], &keys);
+
+    assert_eq!(outcome.code, 0, "{}", outcome.text);
+    assert_eq!(repository.last_message(), "feat(api): ✨ add thing");
 }

@@ -17,14 +17,14 @@ struct Settings {
     scopes: Vec<String>,
 }
 
-/// The path is relative to the working directory, not to the process directory.
-pub fn settings_path(working_directory: &Path) -> PathBuf {
-    working_directory.join(SETTINGS_PATH)
+/// The path is relative to the repository root, not to the process directory.
+pub fn settings_path(repository_root: &Path) -> PathBuf {
+    repository_root.join(SETTINGS_PATH)
 }
 
 /// A missing or unreadable file gives no scopes, because the file is optional metadata.
-pub fn read_scopes(working_directory: &Path) -> Vec<String> {
-    let path = settings_path(working_directory);
+pub fn read_scopes(repository_root: &Path) -> Vec<String> {
+    let path = settings_path(repository_root);
     jsonc::read::<Settings>(&path)
         .unwrap_or_default()
         .unwrap_or_default()
@@ -32,16 +32,16 @@ pub fn read_scopes(working_directory: &Path) -> Vec<String> {
 }
 
 /// Adds one scope to the settings file and keeps every comment.
-pub fn add_scope(working_directory: &Path, scope: &str) -> Result<(), String> {
-    let path = settings_path(working_directory);
+pub fn add_scope(repository_root: &Path, scope: &str) -> Result<(), String> {
+    let path = settings_path(repository_root);
     jsonc::edit_file(&path, |text| {
         jsonc::append_to_string_array(text, SCOPES_KEY, scope)
     })
 }
 
 /// The scopes from the settings file come first, then the three fixed rows.
-pub fn menu_entries(working_directory: &Path) -> Vec<String> {
-    let mut entries = read_scopes(working_directory);
+pub fn menu_entries(repository_root: &Path) -> Vec<String> {
+    let mut entries = read_scopes(repository_root);
     entries.push(NO_SCOPE.to_string());
     entries.push(NEW_SCOPE.to_string());
     entries.push(NEW_SCOPE_ONCE.to_string());
