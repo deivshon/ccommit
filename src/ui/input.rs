@@ -438,6 +438,26 @@ mod tests {
     }
 
     #[test]
+    fn ctrl_and_backspace_erase_one_word() {
+        let mut input = filled("add the whole thing");
+        input.handle(KeyEvent::new(KeyCode::Backspace, KeyModifiers::CONTROL));
+        assert_eq!(input.text(), "add the whole ");
+
+        // A terminal without the kitty keyboard protocol sends Ctrl+H for Ctrl+Backspace.
+        input.handle(control('h'));
+        assert_eq!(input.text(), "add the ");
+    }
+
+    #[test]
+    fn ctrl_and_delete_erase_the_next_word() {
+        let mut input = filled("add the whole thing");
+        input.handle(control('a'));
+        input.handle(KeyEvent::new(KeyCode::Delete, KeyModifiers::CONTROL));
+
+        assert_eq!(input.text(), " the whole thing");
+    }
+
+    #[test]
     fn option_and_delete_erase_the_next_word() {
         let mut input = filled("add the whole thing");
         input.handle(control('a'));

@@ -67,7 +67,7 @@ impl Editor {
     /// Handles the keys the text area does not map. `None` gives the key back to the text area.
     ///
     /// The text area already maps Ctrl+A, Ctrl+E, Ctrl+W, Ctrl+K, Option+Backspace,
-    /// Option+Delete, and Ctrl with an arrow. Cmd reaches the program only when the terminal
+    /// Option+Delete, and Ctrl with an arrow. It has no map for Ctrl with Backspace or Delete. Cmd reaches the program only when the terminal
     /// speaks the kitty keyboard protocol.
     fn shortcut(&mut self, key: KeyEvent) -> Option<bool> {
         let command = key.modifiers.contains(KeyModifiers::SUPER);
@@ -90,6 +90,9 @@ impl Editor {
             }
             KeyCode::Left if option => self.move_to(CursorMove::WordBack),
             KeyCode::Right if option => self.move_to(CursorMove::WordForward),
+            // Without the kitty keyboard protocol, a Linux terminal sends Ctrl+Backspace as Ctrl+H.
+            KeyCode::Backspace | KeyCode::Char('h') if control => self.area.delete_word(),
+            KeyCode::Delete if control => self.area.delete_next_word(),
             // Every terminal line editor discards to the head of the line on Ctrl+U.
             KeyCode::Char('u') if control => self.area.delete_line_by_head(),
             KeyCode::Char('z') if control => self.area.undo(),
